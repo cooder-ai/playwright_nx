@@ -1,0 +1,13 @@
+diff --git a/tests/electron/electron-app.spec.ts b/tests/electron/electron-app.spec.ts
+index c725752e3..a03c0c910 100644
+--- a/tests/electron/electron-app.spec.ts
++++ b/tests/electron/electron-app.spec.ts
+@@ -114,7 +114,7 @@ test('should fire console events with handles and complex objects', async ({ lau
+ 
+ test('should dispatch ready event', async ({ launchElectronApp }) => {
+   const electronApp = await launchElectronApp('electron-app-ready-event.js');
+-  const events = await electronApp.evaluate(() => globalThis.__playwrightLog);
++  const events = await electronApp.evaluate(() => globalThis.__nxLog);
+   expect(events).toEqual([
+     'isReady == false',
+     'will-finish-launching fired',

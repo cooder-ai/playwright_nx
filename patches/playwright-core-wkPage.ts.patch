@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-core/src/server/webkit/wkPage.ts b/packages/playwright-core/src/server/webkit/wkPage.ts
+index 9e37f40ee..0486fd0c9 100644
+--- a/packages/playwright-core/src/server/webkit/wkPage.ts
++++ b/packages/playwright-core/src/server/webkit/wkPage.ts
+@@ -50,7 +50,7 @@ import type { InitScript, PageDelegate } from '../page';
+ import type { Progress } from '../progress';
+ import type * as types from '../types';
+ 
+-const UTILITY_WORLD_NAME = '__playwright_utility_world__';
++const UTILITY_WORLD_NAME = '__nx_utility_world__';
+ 
+ export class WKPage implements PageDelegate {
+   readonly rawMouse: RawMouseImpl;

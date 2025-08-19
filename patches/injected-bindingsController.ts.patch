@@ -1,0 +1,20 @@
+diff --git a/packages/injected/src/bindingsController.ts b/packages/injected/src/bindingsController.ts
+index ec0ff89ee..a1c6faf18 100644
+--- a/packages/injected/src/bindingsController.ts
++++ b/packages/injected/src/bindingsController.ts
+@@ -51,6 +51,7 @@ export class BindingsController {
+       removed: false,
+     };
+     this._bindings.set(bindingName, data);
++    
+     (this._global as any)[bindingName] = (...args: any[]) => {
+       if (data.removed)
+         throw new Error(`binding "${bindingName}" has been removed`);
+@@ -71,6 +72,7 @@ export class BindingsController {
+         }
+         payload = { name: bindingName, seq, serializedArgs };
+       }
++      
+       (this._global as any)[this._globalBindingName](JSON.stringify(payload));
+       return promise;
+     };

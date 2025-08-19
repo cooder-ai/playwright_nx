@@ -1,0 +1,208 @@
+diff --git a/packages/trace-viewer/src/sw/snapshotRenderer.ts b/packages/trace-viewer/src/sw/snapshotRenderer.ts
+index a0980ac7b..5666a06ca 100644
+--- a/packages/trace-viewer/src/sw/snapshotRenderer.ts
++++ b/packages/trace-viewer/src/sw/snapshotRenderer.ts
+@@ -105,7 +105,7 @@ export class SnapshotRenderer {
+         const nodeName = name === 'NOSCRIPT' ? 'X-NOSCRIPT' : name;
+         const attrs = Object.entries(nodeAttrs || {});
+         result.push('<', nodeName);
+-        const kCurrentSrcAttribute = '__playwright_current_src__';
++        const kCurrentSrcAttribute = '__nx_current_src__';
+         const isFrame = nodeName === 'IFRAME' || nodeName === 'FRAME';
+         const isAnchor = nodeName === 'A';
+         const isImg = nodeName === 'IMG';
+@@ -115,7 +115,7 @@ export class SnapshotRenderer {
+           let attrName = attr;
+           if (isFrame && attr.toLowerCase() === 'src') {
+             // Never set relative URLs as <iframe src> - they start fetching frames immediately.
+-            attrName = '__playwright_src__';
++            attrName = '__nx_src__';
+           }
+           if (isImg && attr === kCurrentSrcAttribute) {
+             // Render currentSrc for images, so that trace viewer does not accidentally
+@@ -250,7 +250,7 @@ type FrameBoundingRectsInfo = {
+ 
+ declare global {
+   interface Window {
+-    __playwright_frame_bounding_rects__: FrameBoundingRectsInfo;
++    __nx_frame_bounding_rects__: FrameBoundingRectsInfo;
+   }
+ }
+ 
+@@ -261,7 +261,7 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+     const isUnderTest = searchParams.has('isUnderTest');
+ 
+     // info to recursively compute canvas position relative to the top snapshot frame.
+-    // Before rendering each iframe, its parent extracts the '__playwright_canvas_render_info__' attribute
++    // Before rendering each iframe, its parent extracts the '__nx_canvas_render_info__' attribute
+     // value and keeps in this variable. It can then remove the attribute and render the element,
+     // which will eventually trigger the same process inside the iframe recursively.
+     // When there's a canvas to render, we iterate over its ancestor frames to compute
+@@ -270,7 +270,7 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+       viewport,
+       frames: new WeakMap(),
+     };
+-    window['__playwright_frame_bounding_rects__'] = frameBoundingRectsInfo;
++    window['__nx_frame_bounding_rects__'] = frameBoundingRectsInfo;
+ 
+     const kPointerWarningTitle = 'Recorded click position in absolute coordinates did not' +
+         ' match the center of the clicked element. This is likely due to a difference between' +
+@@ -287,45 +287,45 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+ 
+     const visit = (root: Document | ShadowRoot) => {
+       // Collect all scrolled elements for later use.
+-      for (const e of root.querySelectorAll(`[__playwright_scroll_top_]`))
++      for (const e of root.querySelectorAll(`[__nx_scroll_top_]`))
+         scrollTops.push(e);
+-      for (const e of root.querySelectorAll(`[__playwright_scroll_left_]`))
++      for (const e of root.querySelectorAll(`[__nx_scroll_left_]`))
+         scrollLefts.push(e);
+ 
+-      for (const element of root.querySelectorAll(`[__playwright_value_]`)) {
++      for (const element of root.querySelectorAll(`[__nx_value_]`)) {
+         const inputElement = element as HTMLInputElement | HTMLTextAreaElement;
+         if (inputElement.type !== 'file')
+-          inputElement.value = inputElement.getAttribute('__playwright_value_')!;
+-        element.removeAttribute('__playwright_value_');
++          inputElement.value = inputElement.getAttribute('__nx_value_')!;
++        element.removeAttribute('__nx_value_');
+       }
+-      for (const element of root.querySelectorAll(`[__playwright_checked_]`)) {
+-        (element as HTMLInputElement).checked = element.getAttribute('__playwright_checked_') === 'true';
+-        element.removeAttribute('__playwright_checked_');
++      for (const element of root.querySelectorAll(`[__nx_checked_]`)) {
++        (element as HTMLInputElement).checked = element.getAttribute('__nx_checked_') === 'true';
++        element.removeAttribute('__nx_checked_');
+       }
+-      for (const element of root.querySelectorAll(`[__playwright_selected_]`)) {
+-        (element as HTMLOptionElement).selected = element.getAttribute('__playwright_selected_') === 'true';
+-        element.removeAttribute('__playwright_selected_');
++      for (const element of root.querySelectorAll(`[__nx_selected_]`)) {
++        (element as HTMLOptionElement).selected = element.getAttribute('__nx_selected_') === 'true';
++        element.removeAttribute('__nx_selected_');
+       }
+-      for (const element of root.querySelectorAll(`[__playwright_popover_open_]`)) {
++      for (const element of root.querySelectorAll(`[__nx_popover_open_]`)) {
+         try {
+           (element as HTMLElement).showPopover();
+         } catch {
+         }
+-        element.removeAttribute('__playwright_popover_open_');
++        element.removeAttribute('__nx_popover_open_');
+       }
+-      for (const element of root.querySelectorAll(`[__playwright_dialog_open_]`)) {
++      for (const element of root.querySelectorAll(`[__nx_dialog_open_]`)) {
+         try {
+-          if (element.getAttribute('__playwright_dialog_open_') === 'modal')
++          if (element.getAttribute('__nx_dialog_open_') === 'modal')
+             (element as HTMLDialogElement).showModal();
+           else
+             (element as HTMLDialogElement).show();
+         } catch {
+         }
+-        element.removeAttribute('__playwright_dialog_open_');
++        element.removeAttribute('__nx_dialog_open_');
+       }
+ 
+       for (const targetId of targetIds) {
+-        for (const target of root.querySelectorAll(`[__playwright_target__="${targetId}"]`)) {
++        for (const target of root.querySelectorAll(`[__nx_target__="${targetId}"]`)) {
+           const style = (target as HTMLElement).style;
+           style.outline = '2px solid #006ab1';
+           style.backgroundColor = '#6fa8dc7f';
+@@ -334,12 +334,12 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+       }
+ 
+       for (const iframe of root.querySelectorAll('iframe, frame')) {
+-        const boundingRectJson = iframe.getAttribute('__playwright_bounding_rect__');
+-        iframe.removeAttribute('__playwright_bounding_rect__');
++        const boundingRectJson = iframe.getAttribute('__nx_bounding_rect__');
++        iframe.removeAttribute('__nx_bounding_rect__');
+         const boundingRect = boundingRectJson ? JSON.parse(boundingRectJson) : undefined;
+         if (boundingRect)
+           frameBoundingRectsInfo.frames.set(iframe, { boundingRect, scrollLeft: 0, scrollTop: 0 });
+-        const src = iframe.getAttribute('__playwright_src__');
++        const src = iframe.getAttribute('__nx_src__');
+         if (!src) {
+           iframe.setAttribute('src', 'data:text/html,<body style="background: #ddd"></body>');
+         } else {
+@@ -355,15 +355,15 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+       }
+ 
+       {
+-        const body = root.querySelector(`body[__playwright_custom_elements__]`);
++        const body = root.querySelector(`body[__nx_custom_elements__]`);
+         if (body && window.customElements) {
+-          const customElements = (body.getAttribute('__playwright_custom_elements__') || '').split(',');
++          const customElements = (body.getAttribute('__nx_custom_elements__') || '').split(',');
+           for (const elementName of customElements)
+             window.customElements.define(elementName, class extends HTMLElement {});
+         }
+       }
+ 
+-      for (const element of root.querySelectorAll(`template[__playwright_shadow_root_]`)) {
++      for (const element of root.querySelectorAll(`template[__nx_shadow_root_]`)) {
+         const template = element as HTMLTemplateElement;
+         const shadowRoot = template.parentElement!.attachShadow({ mode: 'open' });
+         shadowRoot.appendChild(template.content);
+@@ -373,10 +373,10 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+ 
+       if ('adoptedStyleSheets' in (root as any)) {
+         const adoptedSheets: CSSStyleSheet[] = [...(root as any).adoptedStyleSheets];
+-        for (const element of root.querySelectorAll(`template[__playwright_style_sheet_]`)) {
++        for (const element of root.querySelectorAll(`template[__nx_style_sheet_]`)) {
+           const template = element as HTMLTemplateElement;
+           const sheet = new CSSStyleSheet();
+-          (sheet as any).replaceSync(template.getAttribute('__playwright_style_sheet_'));
++          (sheet as any).replaceSync(template.getAttribute('__nx_style_sheet_'));
+           adoptedSheets.push(sheet);
+         }
+         (root as any).adoptedStyleSheets = adoptedSheets;
+@@ -388,14 +388,14 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+     const onLoad = () => {
+       window.removeEventListener('load', onLoad);
+       for (const element of scrollTops) {
+-        element.scrollTop = +element.getAttribute('__playwright_scroll_top_')!;
+-        element.removeAttribute('__playwright_scroll_top_');
++        element.scrollTop = +element.getAttribute('__nx_scroll_top_')!;
++        element.removeAttribute('__nx_scroll_top_');
+         if (frameBoundingRectsInfo.frames.has(element))
+           frameBoundingRectsInfo.frames.get(element)!.scrollTop = element.scrollTop;
+       }
+       for (const element of scrollLefts) {
+-        element.scrollLeft = +element.getAttribute('__playwright_scroll_left_')!;
+-        element.removeAttribute('__playwright_scroll_left_');
++        element.scrollLeft = +element.getAttribute('__nx_scroll_left_')!;
++        element.removeAttribute('__nx_scroll_left_');
+         if (frameBoundingRectsInfo.frames.has(element))
+           frameBoundingRectsInfo.frames.get(element)!.scrollLeft = element.scrollTop;
+       }
+@@ -479,8 +479,8 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+           for (const canvas of canvasElements) {
+             const context = canvas.getContext('2d')!;
+ 
+-            const boundingRectAttribute = canvas.getAttribute('__playwright_bounding_rect__');
+-            canvas.removeAttribute('__playwright_bounding_rect__');
++            const boundingRectAttribute = canvas.getAttribute('__nx_bounding_rect__');
++            canvas.removeAttribute('__nx_bounding_rect__');
+             if (!boundingRectAttribute)
+               continue;
+ 
+@@ -496,7 +496,7 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+               const iframe = currWindow.frameElement!;
+               currWindow = currWindow.parent;
+ 
+-              const iframeInfo = currWindow['__playwright_frame_bounding_rects__']?.frames.get(iframe);
++              const iframeInfo = currWindow['__nx_frame_bounding_rects__']?.frames.get(iframe);
+               if (!iframeInfo?.boundingRect)
+                 break;
+ 
+@@ -509,7 +509,7 @@ function snapshotScript(viewport: ViewportSize, ...targetIds: (string | undefine
+               boundingRect.bottom += topOffset;
+             }
+ 
+-            const { width, height } = topSnapshotWindow['__playwright_frame_bounding_rects__'].viewport;
++            const { width, height } = topSnapshotWindow['__nx_frame_bounding_rects__'].viewport;
+ 
+             boundingRect.left = boundingRect.left / width;
+             boundingRect.top = boundingRect.top / height;

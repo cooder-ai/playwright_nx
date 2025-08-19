@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-core/src/server/chromium/crDevTools.ts b/packages/playwright-core/src/server/chromium/crDevTools.ts
+index 5225d6d54..af9fb6691 100644
+--- a/packages/playwright-core/src/server/chromium/crDevTools.ts
++++ b/packages/playwright-core/src/server/chromium/crDevTools.ts
+@@ -18,7 +18,7 @@ import fs from 'fs';
+ 
+ import type { CRSession } from './crConnection';
+ 
+-const kBindingName = '__pw_devtools__';
++const kBindingName = '__nx_devtools__';
+ 
+ // This class intercepts preferences-related DevTools embedder methods
+ // and stores preferences as a json file in the browser installation directory.

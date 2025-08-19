@@ -1,0 +1,24 @@
+diff --git a/tests/library/browsercontext-expose-function.spec.ts b/tests/library/browsercontext-expose-function.spec.ts
+index c242c8582..2c898f53e 100644
+--- a/tests/library/browsercontext-expose-function.spec.ts
++++ b/tests/library/browsercontext-expose-function.spec.ts
+@@ -25,6 +25,9 @@ it('expose binding should work', async ({ context }) => {
+     return a + b;
+   });
+   const page = await context.newPage();
++  
++  
++  
+   const result = await page.evaluate('add(5, 6)');
+   expect(bindingSource.context).toBe(context);
+   expect(bindingSource.page).toBe(page);
+@@ -91,7 +94,9 @@ it('should work with CSP', async ({ page, context, server }) => {
+   server.setCSP('/empty.html', 'default-src "self"');
+   await page.goto(server.EMPTY_PAGE);
+   let called = false;
++  
+   await context.exposeBinding('hi', () => called = true);
++  
+   await page.evaluate(() => (window as any).hi());
+   expect(called).toBe(true);
+ });

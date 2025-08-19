@@ -1,0 +1,35 @@
+diff --git a/packages/playwright-core/src/server/screenshotter.ts b/packages/playwright-core/src/server/screenshotter.ts
+index 93765cc33..43d9bf6a6 100644
+--- a/packages/playwright-core/src/server/screenshotter.ts
++++ b/packages/playwright-core/src/server/screenshotter.ts
+@@ -30,7 +30,7 @@ import type { ParsedSelector } from '../utils/isomorphic/selectorParser';
+ 
+ declare global {
+   interface Window {
+-    __pwCleanupScreenshot?: () => void;
++    __nxCleanupScreenshot?: () => void;
+   }
+ }
+ 
+@@ -157,10 +157,10 @@ function inPagePrepareForScreenshots(screenshotStyle: string, hideCaret: boolean
+     });
+   }
+ 
+-  window.__pwCleanupScreenshot = () => {
++  window.__nxCleanupScreenshot = () => {
+     for (const cleanupCallback of cleanupCallbacks)
+       cleanupCallback();
+-    delete window.__pwCleanupScreenshot;
++    delete window.__nxCleanupScreenshot;
+   };
+ }
+ 
+@@ -268,7 +268,7 @@ export class Screenshotter {
+   }
+ 
+   async _restorePageAfterScreenshot() {
+-    await this._page.safeNonStallingEvaluateInAllFrames('window.__pwCleanupScreenshot && window.__pwCleanupScreenshot()', 'utility');
++    await this._page.safeNonStallingEvaluateInAllFrames('window.__nxCleanupScreenshot && window.__nxCleanupScreenshot()', 'utility');
+   }
+ 
+   async _maskElements(progress: Progress, options: ScreenshotOptions): Promise<() => Promise<void>> {

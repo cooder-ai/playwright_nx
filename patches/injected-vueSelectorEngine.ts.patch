@@ -1,0 +1,22 @@
+diff --git a/packages/injected/src/vueSelectorEngine.ts b/packages/injected/src/vueSelectorEngine.ts
+index 287b04568..37646f264 100644
+--- a/packages/injected/src/vueSelectorEngine.ts
++++ b/packages/injected/src/vueSelectorEngine.ts
+@@ -71,7 +71,7 @@ const classify = (str: string) => {
+ function buildComponentsTreeVue3(instance: VueVNode): ComponentNode {
+   // @see https://github.com/vuejs/devtools/blob/e7132f3392b975e39e1d9a23cf30456c270099c2/packages/app-backend-vue3/src/components/util.ts#L47
+   function getComponentTypeName(options: any): string|undefined {
+-    const name = options.name || options._componentTag || options.__playwright_guessedName;
++    const name = options.name || options._componentTag || options.__nx_guessedName;
+     if (name)
+       return name;
+     const file = options.__file; // injected by vue-loader
+@@ -81,7 +81,7 @@ function buildComponentsTreeVue3(instance: VueVNode): ComponentNode {
+ 
+   // @see https://github.com/vuejs/devtools/blob/e7132f3392b975e39e1d9a23cf30456c270099c2/packages/app-backend-vue3/src/components/util.ts#L42
+   function saveComponentName(instance: VueVNode, key: string): string {
+-    instance.type.__playwright_guessedName = key;
++    instance.type.__nx_guessedName = key;
+     return key;
+   }
+ 

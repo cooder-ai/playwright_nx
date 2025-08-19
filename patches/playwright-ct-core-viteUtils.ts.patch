@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-ct-core/src/viteUtils.ts b/packages/playwright-ct-core/src/viteUtils.ts
+index 58bfececc..971ed1a92 100644
+--- a/packages/playwright-ct-core/src/viteUtils.ts
++++ b/packages/playwright-ct-core/src/viteUtils.ts
+@@ -190,7 +190,7 @@ export function transformIndexFile(id: string, content: string, templateDir: str
+     lines.push(`const ${value.id} = () => import('${importPath?.replaceAll(path.sep, '/')}').then((mod) => mod.${value.remoteName || 'default'});`);
+   }
+ 
+-  lines.push(`__pwRegistry.initialize({ ${[...importInfos.keys()].join(',\n  ')} });`);
++  lines.push(`__nxRegistry.initialize({ ${[...importInfos.keys()].join(',\n  ')} });`);
+   return {
+     code: lines.join('\n'),
+     map: { mappings: '' }

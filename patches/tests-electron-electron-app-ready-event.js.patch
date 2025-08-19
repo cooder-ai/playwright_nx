@@ -1,0 +1,23 @@
+diff --git a/tests/electron/electron-app-ready-event.js b/tests/electron/electron-app-ready-event.js
+index e7fbd1c93..4098026eb 100644
+--- a/tests/electron/electron-app-ready-event.js
++++ b/tests/electron/electron-app-ready-event.js
+@@ -1,12 +1,12 @@
+ const { app } = require('electron');
+ 
+-globalThis.__playwrightLog = [];
++globalThis.__nxLog = [];
+ 
+-globalThis.__playwrightLog.push(`isReady == ${app.isReady()}`);
++globalThis.__nxLog.push(`isReady == ${app.isReady()}`);
+ app.whenReady().then(() => {
+-  globalThis.__playwrightLog.push(`whenReady resolved`);
+-  globalThis.__playwrightLog.push(`isReady == ${app.isReady()}`);
++  globalThis.__nxLog.push(`whenReady resolved`);
++  globalThis.__nxLog.push(`isReady == ${app.isReady()}`);
+ });
+ 
+-app.on('will-finish-launching', () => globalThis.__playwrightLog.push('will-finish-launching fired'));
+-app.on('ready', () => globalThis.__playwrightLog.push('ready fired'));
++app.on('will-finish-launching', () => globalThis.__nxLog.push('will-finish-launching fired'));
++app.on('ready', () => globalThis.__nxLog.push('ready fired'));

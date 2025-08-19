@@ -1,0 +1,72 @@
+diff --git a/packages/playwright-core/src/server/page.ts b/packages/playwright-core/src/server/page.ts
+index 7f8f7b716..32ff975e1 100644
+--- a/packages/playwright-core/src/server/page.ts
++++ b/packages/playwright-core/src/server/page.ts
+@@ -795,7 +795,8 @@ export class Page extends SdkObject {
+     const bindings = [...this.browserContext._pageBindings.values(), ...this._pageBindings.values()].map(binding => binding.initScript);
+     if (this.browserContext.bindingsInitScript)
+       bindings.unshift(this.browserContext.bindingsInitScript);
+-    return [...bindings, ...this.browserContext.initScripts, ...this.initScripts];
++    const allScripts = [...bindings, ...this.browserContext.initScripts, ...this.initScripts];
++    return allScripts;
+   }
+ 
+   getBinding(name: string) {
+@@ -879,19 +880,27 @@ export class Worker extends SdkObject {
+ }
+ 
+ export class PageBinding {
+-  private static kController = '__playwright__binding__controller__';
+-  static kBindingName = '__playwright__binding__';
++  private static kController = '__nx_controller__';
++  static kBindingName = '__nx_binding__';
+ 
+   static createInitScript() {
+-    return new InitScript(`
+-      (() => {
+-        const module = {};
++    return new InitScript(`(() => {
++      try {
++        console.log('Init script executing...');
++        if (globalThis['${PageBinding.kController}']) {
++          console.log('Controller already exists');
++          return;
++        }
++        const bindingName = '${PageBinding.kBindingName}';
++        const module = { exports: {} };
+         ${rawBindingsControllerSource.source}
+-        const property = '${PageBinding.kController}';
+-        if (!globalThis[property])
+-          globalThis[property] = new (module.exports.BindingsController())(globalThis, '${PageBinding.kBindingName}');
+-      })();
+-    `);
++        const BindingsController = module.exports.BindingsController;
++        globalThis['${PageBinding.kController}'] = new BindingsController(globalThis, bindingName);
++        console.log('Controller created successfully');
++      } catch (e) {
++        console.error('binding controller init error:', e);
++      }
++    })()`);
+   }
+ 
+   readonly name: string;
+@@ -904,9 +913,17 @@ export class PageBinding {
+   constructor(name: string, playwrightFunction: frames.FunctionWithSource, needsHandle: boolean) {
+     this.name = name;
+     this.playwrightFunction = playwrightFunction;
+-    this.initScript = new InitScript(`globalThis['${PageBinding.kController}'].addBinding(${JSON.stringify(name)}, ${needsHandle})`);
++    this.initScript = new InitScript(`
++      try {
++        if (typeof globalThis['${PageBinding.kController}'] === 'object' && globalThis['${PageBinding.kController}']) {
++          globalThis['${PageBinding.kController}'].addBinding('${name}', ${needsHandle});
++        }
++      } catch (e) {
++        console.error('binding init error:', e);
++      }
++    `);
+     this.needsHandle = needsHandle;
+-    this.cleanupScript = `globalThis['${PageBinding.kController}'].removeBinding(${JSON.stringify(name)})`;
++    this.cleanupScript = `globalThis['${PageBinding.kController}'].removeBinding('${name}')`;
+   }
+ 
+   static async dispatch(page: Page, payload: string, context: dom.FrameExecutionContext) {

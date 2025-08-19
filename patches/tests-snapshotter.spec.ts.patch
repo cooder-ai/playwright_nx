@@ -1,0 +1,20 @@
+diff --git a/tests/library/snapshotter.spec.ts b/tests/library/snapshotter.spec.ts
+index a1b2c3d..e4f5g6h 100644
+--- a/tests/library/snapshotter.spec.ts
++++ b/tests/library/snapshotter.spec.ts
+@@ -271,7 +271,7 @@ it('should capture snapshot', async ({ page, server }) => {
+   const snapshot = await result.snapshot(page.mainFrame());
+   let html = snapshot!.html;
+   // Remove __playwright_target__ attributes.
+-    html = html.replace(/\s__playwright_target__="[^"]+"/g, '');
++    html = html.replace(/\s__nx_target__="[^"]+"/g, '');
+   expect(html).toContain('<button>Submit</button>');
+   html = snapshot!.resourceOverrides.find(o => o.url.endsWith('test.css'))!.content;
+   expect(html).toContain('button { color: red; }');
+@@ -277,7 +277,7 @@ it('should capture snapshot', async ({ page, server }) => {
+   html = snapshot!.resourceOverrides.find(o => o.url.endsWith('test.css'))!.content;
+   expect(html).toContain('button { color: red; }');
+   const css = snapshot!.resourceOverrides.find(o => o.url.includes('__playwright_target__') && o.url.endsWith('.css'));
+-      .replace(/<style>.*__playwright_target__.*?<\/style>/, '')
++      .replace(/<style>.*__nx_target__.*?<\/style>/, '')
+       .replace(/\bplaywright-ct-\w+[a-zA-Z]\b/g, '');

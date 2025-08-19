@@ -1,0 +1,11 @@
+diff --git a/tests/library/trace-viewer.spec.ts b/tests/library/trace-viewer.spec.ts
+index a1b2c3d..e4f5g6h 100644
+--- a/tests/library/trace-viewer.spec.ts
++++ b/tests/library/trace-viewer.spec.ts
+@@ -1212,7 +1212,7 @@ test('should show snapshots for synthetic events', async ({ page, server, runAn
+   const snapshotFrame = page.locator('[data-testid="snapshot-container"] iframe[name=snapshot]');
+   const snapshotLocator = snapshotFrame.frameLocator('iframe[name=snapshot]').locator('body');
+   await expect(snapshotLocator).toContainText('Submit me');
+-  await expect(snapshot.locator('[__playwright_target__]')).toHaveText(['Submit']);
++  await expect(snapshot.locator('[__nx_target__]')).toHaveText(['Submit']);
+ });

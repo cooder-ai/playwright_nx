@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-ct-core/src/tsxTransform.ts b/packages/playwright-ct-core/src/tsxTransform.ts
+index fbf3d0cc1..feb1e84a5 100644
+--- a/packages/playwright-ct-core/src/tsxTransform.ts
++++ b/packages/playwright-ct-core/src/tsxTransform.ts
+@@ -57,7 +57,7 @@ export default declare((api: BabelAPI) => {
+                       t.variableDeclarator(
+                           t.identifier(localName),
+                           t.objectExpression([
+-                            t.objectProperty(t.identifier('__pw_type'), t.stringLiteral('importRef')),
++                            t.objectProperty(t.identifier('__nx_type'), t.stringLiteral('importRef')),
+                             t.objectProperty(t.identifier('id'), t.stringLiteral(componentImport.id)),
+                           ]),
+                       )

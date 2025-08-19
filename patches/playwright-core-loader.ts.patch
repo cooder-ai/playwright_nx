@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-core/src/server/electron/loader.ts b/packages/playwright-core/src/server/electron/loader.ts
+index c3aee60db..14c13ac88 100644
+--- a/packages/playwright-core/src/server/electron/loader.ts
++++ b/packages/playwright-core/src/server/electron/loader.ts
+@@ -46,7 +46,7 @@ const whenReadyPromise = new Promise<void>(f => whenReadyCallback = f);
+ app.isReady = () => isReady;
+ app.whenReady = () => whenReadyPromise;
+ 
+-(globalThis as any).__playwright_run = async () => {
++(globalThis as any).__nx_run = async () => {
+   // Wait for app to be ready to avoid browser initialization races.
+   const event = await originalWhenReady;
+   isReady = true;

@@ -1,0 +1,49 @@
+diff --git a/packages/playwright-ct-core/types/component.d.ts b/packages/playwright-ct-core/types/component.d.ts
+index 2f488b885..2c206858a 100644
+--- a/packages/playwright-ct-core/types/component.d.ts
++++ b/packages/playwright-ct-core/types/component.d.ts
+@@ -15,7 +15,7 @@
+  */
+ 
+ export type JsxComponent = {
+-  __pw_type: 'jsx',
++  __nx_type: 'jsx',
+   type: any,
+   props: Record<string, any>,
+ };
+@@ -30,7 +30,7 @@ export type ObjectComponentOptions = {
+ };
+ 
+ export type ObjectComponent = ObjectComponentOptions & {
+-  __pw_type: 'object-component',
++  __nx_type: 'object-component',
+   type: any,
+ };
+ 
+@@ -38,18 +38,18 @@ export type Component = JsxComponent | ObjectComponent;
+ 
+ declare global {
+   interface Window {
+-    playwrightMount(component: Component, rootElement: Element, hooksConfig?: any): Promise<void>;
+-    playwrightUnmount(rootElement: Element): Promise<void>;
+-    playwrightUpdate(rootElement: Element, component: Component): Promise<void>;
+-    __pw_hooks_before_mount?: (<HooksConfig>(
++    nxMount(component: Component, rootElement: Element, hooksConfig?: any): Promise<void>;
++    nxUnmount(rootElement: Element): Promise<void>;
++    nxUpdate(rootElement: Element, component: Component): Promise<void>;
++    __nx_hooks_before_mount?: (<HooksConfig>(
+       params: { hooksConfig?: HooksConfig; [key: string]: any }
+     ) => Promise<any>)[];
+-    __pw_hooks_after_mount?: (<HooksConfig>(
++    __nx_hooks_after_mount?: (<HooksConfig>(
+       params: { hooksConfig?: HooksConfig; [key: string]: any }
+     ) => Promise<void>)[];
+-    // Can't start with __pw due to core reuse bindings logic for __pw*.
++    // Can't start with __nx due to core reuse bindings logic for __nx*.
+     __ctDispatchFunction: (ordinal: number, args: any[]) => void;
+-    __pwUnwrapObject: (value: any) => Promise<any>;
+-    __pwTransformObject: (value: any, mapping: (v: any) => { result: any } | undefined) => any;
++    __nxUnwrapObject: (value: any) => Promise<any>;
++    __nxTransformObject: (value: any, mapping: (v: any) => { result: any } | undefined) => any;
+   }
+ }

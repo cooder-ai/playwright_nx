@@ -1,0 +1,20 @@
+diff --git a/tests/playwright-test/loader.spec.ts b/tests/playwright-test/loader.spec.ts
+index 4372b2524..9431fd558 100644
+--- a/tests/playwright-test/loader.spec.ts
++++ b/tests/playwright-test/loader.spec.ts
+@@ -523,13 +523,13 @@ test('should load jsx with top-level component', async ({ runInlineTest }) => {
+       const component = <div>Hello <span>world</span></div>;
+       test('succeeds', () => {
+         expect(component).toEqual({
+-          __pw_type: 'jsx',
++          __nx_type: 'jsx',
+           type: 'div',
+           props: {
+             children: [
+               'Hello ',
+               {
+-                __pw_type: 'jsx',
++                __nx_type: 'jsx',
+                 type: 'span',
+                 props: {
+                   children: 'world'

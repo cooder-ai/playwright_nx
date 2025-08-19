@@ -1,0 +1,26 @@
+diff --git a/packages/injected/src/webSocketMock.ts b/packages/injected/src/webSocketMock.ts
+index f45885a4e..20b31b7f2 100644
+--- a/packages/injected/src/webSocketMock.ts
++++ b/packages/injected/src/webSocketMock.ts
+@@ -37,7 +37,7 @@ export type APIRequest = ConnectRequest | PassthroughRequest | EnsureOpenedReque
+ type GlobalThis = typeof globalThis;
+ 
+ export function inject(globalThis: GlobalThis) {
+-  if ((globalThis as any).__pwWebSocketDispatch)
++  if ((globalThis as any).__nxWebSocketDispatch)
+     return;
+ 
+   function generateId() {
+@@ -85,10 +85,10 @@ export function inject(globalThis: GlobalThis) {
+     return binaryType === 'arraybuffer' ? buffer : new Blob([buffer]);
+   }
+ 
+-  const binding = (globalThis as any).__pwWebSocketBinding as (message: BindingPayload) => void;
++  const binding = (globalThis as any).__nxWebSocketBinding as (message: BindingPayload) => void;
+   const NativeWebSocket: typeof WebSocket = globalThis.WebSocket;
+   const idToWebSocket = new Map<string, WebSocketMock>();
+-  (globalThis as any).__pwWebSocketDispatch = (request: APIRequest) => {
++  (globalThis as any).__nxWebSocketDispatch = (request: APIRequest) => {
+     const ws = idToWebSocket.get(request.id);
+     if (!ws)
+       return;

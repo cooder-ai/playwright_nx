@@ -1,0 +1,21 @@
+diff --git a/packages/playwright-ct-vue/registerSource.mjs b/packages/playwright-ct-vue/registerSource.mjs
+index a1b2c3d..e4f5g6h 100644
+--- a/packages/playwright-ct-vue/registerSource.mjs
++++ b/packages/playwright-ct-vue/registerSource.mjs
+@@ -17,11 +17,11 @@
+ // @ts-check
+ // This file is injected into the registry as text, no dependencies are allowed.
+ 
+-import { createApp as __pwCreateApp, setDevtoolsHook as __pwSetDevtoolsHook, h as __pwH } from 'vue';
+-import { compile as __pwCompile } from '@vue/compiler-dom';
+-import * as __pwVue from 'vue';
++import { createApp as __nxCreateApp, setDevtoolsHook as __nxSetDevtoolsHook, h as __nxH } from 'vue';
++import { compile as __nxCompile } from '@vue/compiler-dom';
++import * as __nxVue from 'vue';
+ 
+ /** @typedef {import('../playwright-ct-core/types/component').JsxComponent} JsxComponent */
+ /** @typedef {import('../playwright-ct-core/types/component').ObjectComponent} ObjectComponent */
+ /** @typedef {import('../playwright-ct-core/types/component').Component} Component */
+ 
+-const __pwAllListeners = new Map();
++const __nxAllListeners = new Map();

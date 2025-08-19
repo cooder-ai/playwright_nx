@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-core/src/server/electron/electron.ts b/packages/playwright-core/src/server/electron/electron.ts
+index 8a341743b..054165325 100644
+--- a/packages/playwright-core/src/server/electron/electron.ts
++++ b/packages/playwright-core/src/server/electron/electron.ts
+@@ -121,7 +121,7 @@ export class ElectronApplication extends SdkObject {
+   async initialize() {
+     await this._nodeSession.send('Runtime.enable', {});
+     // Delay loading the app until browser is started and the browser targets are configured to auto-attach.
+-    await this._nodeSession.send('Runtime.evaluate', { expression: '__playwright_run()' });
++    await this._nodeSession.send('Runtime.evaluate', { expression: '__nx_run()' });
+   }
+ 
+   process(): childProcess.ChildProcess {

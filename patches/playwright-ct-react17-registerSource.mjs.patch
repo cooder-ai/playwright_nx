@@ -1,0 +1,109 @@
+diff --git a/packages/playwright-ct-react17/registerSource.mjs b/packages/playwright-ct-react17/registerSource.mjs
+index a1b2c3d..e4f5g6h 100644
+--- a/packages/playwright-ct-react17/registerSource.mjs
++++ b/packages/playwright-ct-react17/registerSource.mjs
+@@ -17,8 +17,8 @@
+ // @ts-check
+ // This file is injected into the registry as text, no dependencies are allowed.
+ 
+-import __pwReact from 'react';
+-import __pwReactDOM from 'react-dom';
++import __nxReact from 'react';
++import __nxReactDOM from 'react-dom';
+ /** @typedef {import('../playwright-ct-core/types/component').JsxComponent} JsxComponent */
+ /** @typedef {import('../playwright-ct-core/types/component').ObjectComponent} ObjectComponent */
+ /** @typedef {import('../playwright-ct-core/types/component').Component} Component */
+@@ -22,7 +22,7 @@ import __pwReactDOM from 'react-dom';
+ /** @typedef {import('../playwright-ct-core/types/component').ObjectComponent} ObjectComponent */
+ /** @typedef {import('../playwright-ct-core/types/component').Component} Component */
+ 
+-const __pwRootRegistry = new Map();
++const __nxRootRegistry = new Map();
+ 
+ /**
+  * @param {Component} component
+@@ -29,11 +29,11 @@ const __pwRootRegistry = new Map();
+  * @returns {boolean}
+  */
+ function isJSX(component) {
+-  return typeof component === 'object' && component && component.__pw_type === 'jsx';
++  return typeof component === 'object' && component && component.__nx_type === 'jsx';
+ }
+ 
+ /**
+  * @param {any} value
+  */
+-function __pwRender(value) {
+-  return window.__pwTransformObject(value, v => {
++function __nxRender(value) {
++  return window.__nxTransformObject(value, v => {
+     if (isJSX(v)) {
+       const props = component.props ? __pwRender(component.props) : {};
+       const key = component.key ? __pwRender(component.key) : undefined;
++      const props = component.props ? __nxRender(component.props) : {};
++      const key = component.key ? __nxRender(component.key) : undefined;
+       let createElementArguments = [component.type, props];
+       if (component.children) {
+         const children = Array.isArray(component.children) ? component.children : [component.children];
+@@ -47,7 +47,7 @@ function __pwRender(value) {
+         }
+       }
+       return { result: __pwReact.createElement(component.type, ...createElementArguments) };
++      return { result: __nxReact.createElement(component.type, ...createElementArguments) };
+     }
+   });
+ }
+@@ -55,18 +55,18 @@ function __pwRender(value) {
+ window.playwrightMount = async (component, rootElement, hooksConfig) => {
+   const componentWrapper = isJSX(component) ? component : { __pw_type: 'object-component', object: component };
+ 
+-  if (__pwRootRegistry.has(rootElement)) {
++  if (__nxRootRegistry.has(rootElement)) {
+     throw new Error('Attempting to mount a component into an element that already has a component mounted into it. This is not supported.');
+   }
+ 
+   const entry = { root: undefined, unmountPromise: undefined };
+-  __pwRootRegistry.set(rootElement, entry);
++  __nxRootRegistry.set(rootElement, entry);
+ 
+   function AppWrapper() {
+     const [renderer, setRenderer] = __pwReact.useState(() => __pwRender(component));
++    const [renderer, setRenderer] = __nxReact.useState(() => __nxRender(component));
+     entry.root = { setRenderer };
+   }
+ 
+-  for (const hook of window.__pw_hooks_before_mount || []) {
++  for (const hook of window.__nx_hooks_before_mount || []) {
+     await hook({
+       hooksConfig
+     });
+@@ -77,7 +77,7 @@ window.playwrightMount = async (component, rootElement, hooksConfig) => {
+   // TODO: replace with createRoot() when we drop react 17 support.
+   __pwReactDOM.render(__pwReact.createElement(AppWrapper), rootElement);
++  __nxReactDOM.render(__nxReact.createElement(AppWrapper), rootElement);
+ 
+-  for (const hook of window.__pw_hooks_after_mount || []) {
++  for (const hook of window.__nx_hooks_after_mount || []) {
+     await hook({
+       hooksConfig,
+       get root() { return rootElement; }
+@@ -87,7 +87,7 @@ window.playwrightMount = async (component, rootElement, hooksConfig) => {
+ };
+ 
+ window.playwrightUnmount = async rootElement => {
+-  const entry = __pwRootRegistry.get(rootElement);
++  const entry = __nxRootRegistry.get(rootElement);
+   if (!entry)
+     throw new Error('Component was not mounted');
+ 
+@@ -95,11 +95,11 @@ window.playwrightUnmount = async rootElement => {
+     entry.unmountPromise = new Promise(resolve => {
+       __pwReactDOM.unmountComponentAtNode(rootElement);
++      __nxReactDOM.unmountComponentAtNode(rootElement);
+       resolve();
+     });
+   }
+   await entry.unmountPromise;
+-  __pwRootRegistry.delete(rootElement);
++  __nxRootRegistry.delete(rootElement);
+ };

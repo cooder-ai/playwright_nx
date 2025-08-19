@@ -1,0 +1,31 @@
+diff --git a/packages/injected/src/injectedScript.ts b/packages/injected/src/injectedScript.ts
+index 29446799c..6cded70c8 100644
+--- a/packages/injected/src/injectedScript.ts
++++ b/packages/injected/src/injectedScript.ts
+@@ -1268,7 +1268,7 @@ export class InjectedScript {
+       this._markedElements = undefined;
+     const previous = this._markedElements?.elements || new Set();
+ 
+-    const unmarkEvent = new CustomEvent('__playwright_unmark_target__', {
++    const unmarkEvent = new CustomEvent('__nx_unmark_target__', {
+       bubbles: true,
+       cancelable: true,
+       detail: callId,
+@@ -1279,7 +1279,7 @@ export class InjectedScript {
+         element.dispatchEvent(unmarkEvent);
+     }
+ 
+-    const markEvent = new CustomEvent('__playwright_mark_target__', {
++    const markEvent = new CustomEvent('__nx_mark_target__', {
+       bubbles: true,
+       cancelable: true,
+       detail: callId,
+@@ -1294,7 +1294,7 @@ export class InjectedScript {
+   }
+ 
+   private _setupGlobalListenersRemovalDetection() {
+-    const customEventName = '__playwright_global_listeners_check__';
++    const customEventName = '__nx_global_listeners_check__';
+ 
+     let seenEvent = false;
+     const handleCustomEvent = () => seenEvent = true;

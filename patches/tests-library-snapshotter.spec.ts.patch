@@ -1,0 +1,57 @@
+diff --git a/tests/library/snapshotter.spec.ts b/tests/library/snapshotter.spec.ts
+index 9eb839b7e..ea6c69075 100644
+--- a/tests/library/snapshotter.spec.ts
++++ b/tests/library/snapshotter.spec.ts
+@@ -164,7 +164,7 @@ it.describe('snapshots', () => {
+     for (let counter = 0; ; ++counter) {
+       const snapshot = await snapshotter.captureSnapshot(toImpl(page), 'call@' + counter, 'snapshot@call@' + counter);
+       const text = distillSnapshot(snapshot, page.url()).replace(/frame@[^"]+["]/, '<id>"');
+-      if (text === '<FRAMESET><FRAME __playwright_src__=\"/snapshot/<id>\"></FRAME></FRAMESET>')
++      if (text === '<FRAMESET><FRAME __nx_src__=\"/snapshot/<id>\"></FRAME></FRAMESET>')
+         break;
+       await page.waitForTimeout(250);
+     }
+@@ -189,7 +189,7 @@ it.describe('snapshots', () => {
+     for (let counter = 0; ; ++counter) {
+       const snapshot = await snapshotter.captureSnapshot(toImpl(page), 'call@' + counter, 'snapshot@call@' + counter);
+       const text = distillSnapshot(snapshot, page.url()).replace(/frame@[^"]+["]/, '<id>"');
+-      if (text === '<IFRAME __playwright_src__=\"/snapshot/<id>\"></IFRAME>')
++      if (text === '<IFRAME __nx_src__=\"/snapshot/<id>\"></IFRAME>')
+         break;
+       await page.waitForTimeout(250);
+     }
+@@ -209,7 +209,7 @@ it.describe('snapshots', () => {
+     for (let counter = 0; ; ++counter) {
+       const snapshot = await snapshotter.captureSnapshot(toImpl(page), 'call@' + counter, 'snapshot@call@' + counter);
+       const text = distillSnapshot(snapshot, page.url()).replace(/frame@[^"]+["]/, '<id>"');
+-      if (text === '<IFRAME __playwright_src__=\"/snapshot/<id>\"></IFRAME>')
++      if (text === '<IFRAME __nx_src__=\"/snapshot/<id>\"></IFRAME>')
+         break;
+       await page.waitForTimeout(250);
+     }
+@@ -253,7 +253,7 @@ it.describe('snapshots', () => {
+ 
+     const renderer1 = await snapshotter.captureSnapshot(toImpl(page), 'call@1', 'snapshot@call@1');
+     // Expect some adopted style sheets.
+-    expect(distillSnapshot(renderer1, page.url())).toContain('__playwright_style_sheet_');
++    expect(distillSnapshot(renderer1, page.url())).toContain('__nx_style_sheet_');
+ 
+     const renderer2 = await snapshotter.captureSnapshot(toImpl(page), 'call@2', 'snapshot@call@2');
+     const snapshot2 = renderer2.snapshot();
+@@ -271,13 +271,13 @@ it.describe('snapshots', () => {
+ function distillSnapshot(snapshot, url: string, options: { distillTarget: boolean, distillBoundingRect: boolean } = { distillTarget: true, distillBoundingRect: true }) {
+   let { html } = snapshot.render();
+   if (options.distillTarget)
+-    html = html.replace(/\s__playwright_target__="[^"]+"/g, '');
++    html = html.replace(/\s__nx_target__="[^"]+"/g, '');
+   if (options.distillBoundingRect)
+-    html = html.replace(/\s__playwright_bounding_rect__="[^"]+"/g, '');
++    html = html.replace(/\s__nx_bounding_rect__="[^"]+"/g, '');
+   return html
+       .replace(/<style>\*,\*::before,\*::after { visibility: hidden }<\/style>/, '')
+       .replace(/<script>[.\s\S]+<\/script>/, '')
+-      .replace(/<style>.*__playwright_target__.*?<\/style>/, '')
++      .replace(/<style>.*__nx_target__.*?<\/style>/, '')
+       .replace(/<BASE href="about:blank">/, '')
+       .replace(new RegExp(`<BASE href="${url}">`), '')
+       .replace(/<HTML>/, '')

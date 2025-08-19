@@ -1,0 +1,46 @@
+diff --git a/packages/playwright-ct-core/src/injected/serializers.ts b/packages/playwright-ct-core/src/injected/serializers.ts
+index be083e27d..d0969627d 100644
+--- a/packages/playwright-ct-core/src/injected/serializers.ts
++++ b/packages/playwright-ct-core/src/injected/serializers.ts
+@@ -17,12 +17,12 @@
+ import { isImportRef } from './importRegistry';
+ 
+ type FunctionRef = {
+-  __pw_type: 'function';
++  __nx_type: 'function';
+   ordinal: number;
+ };
+ 
+ function isFunctionRef(value: any): value is FunctionRef {
+-  return value && typeof value === 'object' && value.__pw_type === 'function';
++  return value && typeof value === 'object' && value.__nx_type === 'function';
+ }
+ 
+ export function wrapObject(value: any, callbacks: Function[]): any {
+@@ -31,7 +31,7 @@ export function wrapObject(value: any, callbacks: Function[]): any {
+       const ordinal = callbacks.length;
+       callbacks.push(v as Function);
+       const result: FunctionRef = {
+-        __pw_type: 'function',
++        __nx_type: 'function',
+         ordinal,
+       };
+       return { result };
+@@ -48,7 +48,7 @@ export async function unwrapObject(value: any): Promise<any> {
+       return { result };
+     }
+     if (isImportRef(v))
+-      return { result: await window.__pwRegistry.resolveImportRef(v) };
++      return { result: await window.__nxRegistry.resolveImportRef(v) };
+   });
+ }
+ 
+@@ -66,7 +66,7 @@ export function transformObject(value: any, mapping: (v: any) => { result: any }
+       result.push(transformObject(item, mapping));
+     return result;
+   }
+-  if (value?.__pw_type === 'jsx' && typeof value.type === 'function') {
++  if (value?.__nx_type === 'jsx' && typeof value.type === 'function') {
+     throw new Error([
+       `Component "${value.type.name}" cannot be mounted.`,
+       `Most likely, this component is defined in the test file. Create a test story instead.`,

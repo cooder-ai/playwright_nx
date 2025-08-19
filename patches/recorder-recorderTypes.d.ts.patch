@@ -1,0 +1,29 @@
+diff --git a/packages/recorder/src/recorderTypes.d.ts b/packages/recorder/src/recorderTypes.d.ts
+index 2f5b0ffe4..7df07c3ea 100644
+--- a/packages/recorder/src/recorderTypes.d.ts
++++ b/packages/recorder/src/recorderTypes.d.ts
+@@ -99,15 +99,15 @@ export type Source = {
+ 
+ declare global {
+   interface Window {
+-    playwrightSetMode: (mode: Mode) => void;
+-    playwrightSetPaused: (paused: boolean) => void;
+-    playwrightSetSources: (sources: Source[]) => void;
+-    playwrightSelectSource: (sourceId: string) => void;
+-    playwrightSetPageURL: (url: string | undefined) => void;
+-    playwrightSetOverlayVisible: (visible: boolean) => void;
+-    playwrightUpdateLogs: (callLogs: CallLog[]) => void;
+-    playwrightElementPicked: (elementInfo: ElementInfo, userGesture?: boolean) => void;
+-    playwrightSourcesEchoForTest: Source[];
++    nxSetMode: (mode: Mode) => void;
++    nxSetPaused: (paused: boolean) => void;
++    nxSetSources: (sources: Source[]) => void;
++    nxSelectSource: (sourceId: string) => void;
++    nxSetPageURL: (url: string | undefined) => void;
++    nxSetOverlayVisible: (visible: boolean) => void;
++    nxUpdateLogs: (callLogs: CallLog[]) => void;
++    nxElementPicked: (elementInfo: ElementInfo, userGesture?: boolean) => void;
++    nxSourcesEchoForTest: Source[];
+     dispatch(data: any): Promise<void>;
+   }
+ }

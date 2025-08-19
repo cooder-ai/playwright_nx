@@ -1,0 +1,13 @@
+diff --git a/tests/library/trace-viewer.spec.ts b/tests/library/trace-viewer.spec.ts
+index 5352621ba..ae49e5534 100644
+--- a/tests/library/trace-viewer.spec.ts
++++ b/tests/library/trace-viewer.spec.ts
+@@ -1212,7 +1212,7 @@ test('should update highlight when typing snapshot', async ({ page, runAndTrace,
+ test('should open trace-1.31', async ({ showTraceViewer }) => {
+   const traceViewer = await showTraceViewer([path.join(__dirname, '../assets/trace-1.31.zip')]);
+   const snapshot = await traceViewer.snapshotFrame('Click');
+-  await expect(snapshot.locator('[__playwright_target__]')).toHaveText(['Submit']);
++  await expect(snapshot.locator('[__nx_target__]')).toHaveText(['Submit']);
+ });
+ 
+ test('should open trace-1.37', async ({ showTraceViewer }) => {

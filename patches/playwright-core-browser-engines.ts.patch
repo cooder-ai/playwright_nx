@@ -1,0 +1,39 @@
+diff --git a/packages/playwright-core/src/server/firefox/ffPage.ts b/packages/playwright-core/src/server/firefox/ffPage.ts
+index a1b2c3d..e4f5g6h 100644
+--- a/packages/playwright-core/src/server/firefox/ffPage.ts
++++ b/packages/playwright-core/src/server/firefox/ffPage.ts
+@@ -38,7 +38,7 @@ import type { FFBrowserContext } from './ffBrowser';
+ import type { FFFrame } from './ffPage';
+ import type { Protocol } from './ffConnection';
+ 
+-export const UTILITY_WORLD_NAME = '__playwright_utility_world__';
++export const UTILITY_WORLD_NAME = '__nx_utility_world__';
+ 
+ export class FFPage implements PageDelegate {
+   readonly rawPage: FFFrame;
+diff --git a/packages/playwright-core/src/server/webkit/wkPage.ts b/packages/playwright-core/src/server/webkit/wkPage.ts
+index a1b2c3d..e4f5g6h 100644
+--- a/packages/playwright-core/src/server/webkit/wkPage.ts
++++ b/packages/playwright-core/src/server/webkit/wkPage.ts
+@@ -50,7 +50,7 @@ import type { Protocol } from './wkConnection';
+ import type { WKBrowserContext } from './wkBrowser';
+ import type { WKSession } from './wkConnection';
+ 
+-const UTILITY_WORLD_NAME = '__playwright_utility_world__';
++const UTILITY_WORLD_NAME = '__nx_utility_world__';
+ 
+ export class WKPage implements PageDelegate {
+   readonly rawPage: WKSession;
+diff --git a/packages/playwright-core/src/server/bidi/bidiPage.ts b/packages/playwright-core/src/server/bidi/bidiPage.ts
+index a1b2c3d..e4f5g6h 100644
+--- a/packages/playwright-core/src/server/bidi/bidiPage.ts
++++ b/packages/playwright-core/src/server/bidi/bidiPage.ts
+@@ -34,7 +34,7 @@ import type { BidiSession } from './bidiConnection';
+ import type { BidiBrowser, BidiBrowserContext } from './bidiBrowser';
+ import type { BidiFrame } from './bidiPage';
+ 
+-const UTILITY_WORLD_NAME = '__playwright_utility_world__';
++const UTILITY_WORLD_NAME = '__nx_utility_world__';
+ const MAIN_WORLD_NAME = '';
+ 
+ export class BidiPage implements PageDelegate {

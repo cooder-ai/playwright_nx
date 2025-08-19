@@ -1,0 +1,92 @@
+diff --git a/packages/playwright-core/src/server/trace/recorder/snapshotterInjected.ts b/packages/playwright-core/src/server/trace/recorder/snapshotterInjected.ts
+index 953868585..5d39697e8 100644
+--- a/packages/playwright-core/src/server/trace/recorder/snapshotterInjected.ts
++++ b/packages/playwright-core/src/server/trace/recorder/snapshotterInjected.ts
+@@ -37,24 +37,24 @@ export function frameSnapshotStreamer(snapshotStreamer: string, removeNoScript:
+     return;
+ 
+   // Attributes present in the snapshot.
+-  const kShadowAttribute = '__playwright_shadow_root_';
+-  const kValueAttribute = '__playwright_value_';
+-  const kCheckedAttribute = '__playwright_checked_';
+-  const kSelectedAttribute = '__playwright_selected_';
+-  const kScrollTopAttribute = '__playwright_scroll_top_';
+-  const kScrollLeftAttribute = '__playwright_scroll_left_';
+-  const kStyleSheetAttribute = '__playwright_style_sheet_';
+-  const kTargetAttribute = '__playwright_target__';
+-  const kCustomElementsAttribute = '__playwright_custom_elements__';
+-  const kCurrentSrcAttribute = '__playwright_current_src__';
+-  const kBoundingRectAttribute = '__playwright_bounding_rect__';
+-  const kPopoverOpenAttribute = '__playwright_popover_open_';
+-  const kDialogOpenAttribute = '__playwright_dialog_open_';
++  const kShadowAttribute = '__nx_shadow_root_';
++  const kValueAttribute = '__nx_value_';
++  const kCheckedAttribute = '__nx_checked_';
++  const kSelectedAttribute = '__nx_selected_';
++  const kScrollTopAttribute = '__nx_scroll_top_';
++  const kScrollLeftAttribute = '__nx_scroll_left_';
++  const kStyleSheetAttribute = '__nx_style_sheet_';
++  const kTargetAttribute = '__nx_target__';
++  const kCustomElementsAttribute = '__nx_custom_elements__';
++  const kCurrentSrcAttribute = '__nx_current_src__';
++  const kBoundingRectAttribute = '__nx_bounding_rect__';
++  const kPopoverOpenAttribute = '__nx_popover_open_';
++  const kDialogOpenAttribute = '__nx_dialog_open_';
+ 
+   // Symbols for our own info on Nodes/StyleSheets.
+-  const kSnapshotFrameId = Symbol('__playwright_snapshot_frameid_');
+-  const kCachedData = Symbol('__playwright_snapshot_cache_');
+-  const kEndOfList = Symbol('__playwright_end_of_list_');
++  const kSnapshotFrameId = Symbol('__nx_snapshot_frameid_');
++  const kCachedData = Symbol('__nx_snapshot_cache_');
++  const kEndOfList = Symbol('__nx_end_of_list_');
+   type CachedData = {
+     cached?: any[], // Cached values to determine whether the snapshot will be the same.
+     ref?: [number, number], // Previous snapshotNumber and nodeIndex.
+@@ -118,7 +118,7 @@ export function frameSnapshotStreamer(snapshotStreamer: string, removeNoScript:
+     private _refreshListenersWhenNeeded() {
+       this._refreshListeners();
+ 
+-      const customEventName = '__playwright_snapshotter_global_listeners_check__';
++      const customEventName = '__nx_snapshotter_global_listeners_check__';
+ 
+       let seenEvent = false;
+       const handleCustomEvent = () => seenEvent = true;
+@@ -142,18 +142,18 @@ export function frameSnapshotStreamer(snapshotStreamer: string, removeNoScript:
+     }
+ 
+     private _refreshListeners() {
+-      (document as any).addEventListener('__playwright_mark_target__', (event: CustomEvent) => {
++      (document as any).addEventListener('__nx_mark_target__', (event: CustomEvent) => {
+         if (!event.detail)
+           return;
+         const callId = event.detail as string;
+-        (event.composedPath()[0] as any).__playwright_target__ = callId;
++        (event.composedPath()[0] as any).__nx_target__ = callId;
+       });
+-      (document as any).addEventListener('__playwright_unmark_target__', (event: CustomEvent) => {
++      (document as any).addEventListener('__nx_unmark_target__', (event: CustomEvent) => {
+         if (!event.detail)
+           return;
+         const callId = event.detail as string;
+-        if ((event.composedPath()[0] as any).__playwright_target__ === callId)
+-          delete (event.composedPath()[0] as any).__playwright_target__;
++        if ((event.composedPath()[0] as any).__nx_target__ === callId)
++          delete (event.composedPath()[0] as any).__nx_target__;
+       });
+     }
+ 
+@@ -478,10 +478,10 @@ export function frameSnapshotStreamer(snapshotStreamer: string, removeNoScript:
+             visitChild(element.shadowRoot);
+             --shadowDomNesting;
+           }
+-          if ('__playwright_target__' in element) {
++          if ('__nx_target__' in element) {
+             expectValue(kTargetAttribute);
+-            expectValue(element['__playwright_target__']);
+-            attrs[kTargetAttribute] = element['__playwright_target__'] as string;
++            expectValue(element['__nx_target__']);
++            attrs[kTargetAttribute] = element['__nx_target__'] as string;
+           }
+         }
+ 

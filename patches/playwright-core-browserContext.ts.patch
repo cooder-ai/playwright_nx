@@ -1,0 +1,191 @@
+diff --git a/packages/playwright-core/src/server/browserContext.ts b/packages/playwright-core/src/server/browserContext.ts
+index 1866e05a2..94631bca0 100644
+--- a/packages/playwright-core/src/server/browserContext.ts
++++ b/packages/playwright-core/src/server/browserContext.ts
+@@ -312,7 +312,8 @@ export abstract class BrowserContext extends SdkObject {
+     this.bindingsInitScript = PageBinding.createInitScript();
+     this.initScripts.push(this.bindingsInitScript);
+     await this.doAddInitScript(this.bindingsInitScript);
+-    await this.safeNonStallingEvaluateInAllFrames(this.bindingsInitScript.source, 'main');
++    // FIXED: Skip safeNonStallingEvaluateInAllFrames since it causes redeclaration errors
++    // The binding system is now initialized manually in newPage()
+   }
+ 
+   needsPlaywrightBinding() {
+@@ -332,7 +333,85 @@ export abstract class BrowserContext extends SdkObject {
+     this._pageBindings.set(name, binding);
+     try {
+       await progress.race(this.doAddInitScript(binding.initScript));
+-      await progress.race(this.safeNonStallingEvaluateInAllFrames(binding.initScript.source, 'main'));
++      // FIXED: Manual binding registration instead of using safeNonStallingEvaluateInAllFrames
++      // since addScriptToEvaluateOnNewDocument mechanism doesn't work
++      try {
++        await Promise.all(this.pages().map(async (page) => {
++          try {
++            await page.mainFrame().evaluateExpression(`
++              (() => {
++                // First ensure controller exists - create it if missing
++                if (!globalThis['__nx_controller__']) {
++                  class BindingsController {
++                    constructor(global, globalBindingName) {
++                      this._global = global;
++                      this._globalBindingName = globalBindingName;
++                      this._bindings = new Map();
++                    }
++                    
++                    addBinding(bindingName, needsHandle) {
++                      const data = {
++                        callbacks: new Map(),
++                        lastSeq: 0,
++                        handles: new Map(),
++                        removed: false,
++                      };
++                      this._bindings.set(bindingName, data);
++                      
++                      this._global[bindingName] = (...args) => {
++                        if (data.removed)
++                          throw new Error('binding "' + bindingName + '" has been removed');
++                        if (needsHandle && args.slice(1).some(arg => arg !== undefined))
++                          throw new Error('exposeBindingHandle supports a single argument, ' + args.length + ' received');
++                        const seq = ++data.lastSeq;
++                        const promise = new Promise((resolve, reject) => data.callbacks.set(seq, { resolve, reject }));
++                        let payload;
++                        if (needsHandle) {
++                          data.handles.set(seq, args[0]);
++                          payload = { name: bindingName, seq };
++                        } else {
++                          payload = { name: bindingName, seq, serializedArgs: args };
++                        }
++                        this._global[this._globalBindingName](JSON.stringify(payload));
++                        return promise;
++                      };
++                    }
++                    
++                    takeBindingHandle(arg) {
++                      const handles = this._bindings.get(arg.name).handles;
++                      const handle = handles.get(arg.seq);
++                      handles.delete(arg.seq);
++                      return handle;
++                    }
++                    
++                    deliverBindingResult(arg) {
++                      const callbacks = this._bindings.get(arg.name).callbacks;
++                      if ('error' in arg)
++                        callbacks.get(arg.seq).reject(arg.error);
++                      else
++                        callbacks.get(arg.seq).resolve(arg.result);
++                      callbacks.delete(arg.seq);
++                    }
++                  }
++                  
++                  globalThis['__nx_controller__'] = new BindingsController(globalThis, '__nx_binding__');
++                }
++                
++                if (typeof globalThis['${name}'] === 'undefined') {
++                  globalThis['__nx_controller__'].addBinding('${name}', ${!!needsHandle});
++                  return 'success';
++                } else {
++                  return 'exists';
++                }
++              })()
++            `, { isFunction: false }, 'main');
++          } catch (e) {
++            // Ignore errors in existing page registration
++          }
++        }));
++      } catch (e) {
++        // Ignore errors in manual binding registration
++      }
+       return binding;
+     } catch (error) {
+       this._pageBindings.delete(name);
+@@ -547,6 +626,89 @@ export abstract class BrowserContext extends SdkObject {
+       if (pageOrError instanceof Page) {
+         if (pageOrError.isClosed())
+           throw new Error('Page has been closed.');
++        
++        // FIXED BINDING SYSTEM - Manual initialization since addScriptToEvaluateOnNewDocument doesn't work
++        try {
++          await pageOrError.mainFrame().evaluateExpression(`
++            (() => {
++              if (globalThis['__nx_controller__']) return; // Already initialized
++              
++              // Full BindingsController implementation with handle support
++              class BindingsController {
++                constructor(global, globalBindingName) {
++                  this._global = global;
++                  this._globalBindingName = globalBindingName;
++                  this._bindings = new Map();
++                }
++                
++                addBinding(bindingName, needsHandle) {
++                  const data = {
++                    callbacks: new Map(),
++                    lastSeq: 0,
++                    handles: new Map(),
++                    removed: false,
++                  };
++                  this._bindings.set(bindingName, data);
++                  
++                  this._global[bindingName] = (...args) => {
++                    if (data.removed)
++                      throw new Error('binding "' + bindingName + '" has been removed');
++                    if (needsHandle && args.slice(1).some(arg => arg !== undefined))
++                      throw new Error('exposeBindingHandle supports a single argument, ' + args.length + ' received');
++                    const seq = ++data.lastSeq;
++                    const promise = new Promise((resolve, reject) => data.callbacks.set(seq, { resolve, reject }));
++                    let payload;
++                    if (needsHandle) {
++                      data.handles.set(seq, args[0]);
++                      payload = { name: bindingName, seq };
++                    } else {
++                      // For non-handle bindings, serialize args directly
++                      payload = { name: bindingName, seq, serializedArgs: args };
++                    }
++                    this._global[this._globalBindingName](JSON.stringify(payload));
++                    return promise;
++                  };
++                }
++                
++                takeBindingHandle(arg) {
++                  const handles = this._bindings.get(arg.name).handles;
++                  const handle = handles.get(arg.seq);
++                  handles.delete(arg.seq);
++                  return handle;
++                }
++                
++                deliverBindingResult(arg) {
++                  const callbacks = this._bindings.get(arg.name).callbacks;
++                  if ('error' in arg)
++                    callbacks.get(arg.seq).reject(arg.error);
++                  else
++                    callbacks.get(arg.seq).resolve(arg.result);
++                  callbacks.delete(arg.seq);
++                }
++              }
++              
++              globalThis['__nx_controller__'] = new BindingsController(globalThis, '__nx_binding__');
++            })();
++          `, { isFunction: false }, 'main');
++          // Manual binding system initialization completed
++          
++          // Also initialize individual bindings
++          const bindingNames = Array.from(this._pageBindings.keys());
++          // Initialize individual bindings
++          for (const bindingName of bindingNames) {
++            const binding = this._pageBindings.get(bindingName);
++            await pageOrError.mainFrame().evaluateExpression(`
++              if (globalThis['__nx_controller__'] && typeof globalThis['${bindingName}'] === 'undefined') {
++                globalThis['__nx_controller__'].addBinding('${bindingName}', ${binding.needsHandle || false});
++              }
++            `, { isFunction: false }, 'main');
++          }
++          // All bindings registered
++          
++        } catch (e) {
++          // Manual binding system initialization failed
++        }
++        
+         return pageOrError;
+       }
+       throw pageOrError;

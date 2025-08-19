@@ -1,0 +1,29 @@
+diff --git a/packages/playwright-core/src/server/dispatchers/webSocketRouteDispatcher.ts b/packages/playwright-core/src/server/dispatchers/webSocketRouteDispatcher.ts
+index 53384dded..cd8702959 100644
+--- a/packages/playwright-core/src/server/dispatchers/webSocketRouteDispatcher.ts
++++ b/packages/playwright-core/src/server/dispatchers/webSocketRouteDispatcher.ts
+@@ -79,7 +79,7 @@ export class WebSocketRouteDispatcher extends Dispatcher<SdkObject, channels.Web
+             new WebSocketRouteDispatcher(scope, payload.id, payload.url, source.frame);
+           } else {
+             const request: ws.PassthroughRequest = { id: payload.id, type: 'passthrough' };
+-            source.frame.evaluateExpression(`globalThis.__pwWebSocketDispatch(${JSON.stringify(request)})`).catch(() => {});
++            source.frame.evaluateExpression(`globalThis.__nxWebSocketDispatch(${JSON.stringify(request)})`).catch(() => {});
+           }
+           return;
+         }
+@@ -141,7 +141,7 @@ export class WebSocketRouteDispatcher extends Dispatcher<SdkObject, channels.Web
+   }
+ 
+   private async _evaluateAPIRequest(progress: Progress, request: ws.APIRequest) {
+-    await progress.race(this._frame.evaluateExpression(`globalThis.__pwWebSocketDispatch(${JSON.stringify(request)})`).catch(() => {}));
++    await progress.race(this._frame.evaluateExpression(`globalThis.__nxWebSocketDispatch(${JSON.stringify(request)})`).catch(() => {}));
+   }
+ 
+   override _onDispose() {
+@@ -168,5 +168,5 @@ function matchesPattern(dispatcher: PageDispatcher | BrowserContextDispatcher, b
+   return false;
+ }
+ 
+-const kBindingName = '__pwWebSocketBinding';
++const kBindingName = '__custom_ws_binding_8ka2__';
+ type BindingData = { counter: number, connection: DispatcherConnection, binding: PageBinding };

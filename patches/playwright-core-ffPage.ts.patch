@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-core/src/server/firefox/ffPage.ts b/packages/playwright-core/src/server/firefox/ffPage.ts
+index c282649e7..777137cab 100644
+--- a/packages/playwright-core/src/server/firefox/ffPage.ts
++++ b/packages/playwright-core/src/server/firefox/ffPage.ts
+@@ -38,7 +38,7 @@ import type * as frames from '../frames';
+ import type { PageDelegate } from '../page';
+ import type * as types from '../types';
+ 
+-export const UTILITY_WORLD_NAME = '__playwright_utility_world__';
++export const UTILITY_WORLD_NAME = '__nx_utility_world__';
+ 
+ export class FFPage implements PageDelegate {
+   readonly cspErrorsAsynchronousForInlineScripts = true;

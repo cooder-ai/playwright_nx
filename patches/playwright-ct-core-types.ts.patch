@@ -1,0 +1,37 @@
+diff --git a/packages/playwright-ct-core/types/component.d.ts b/packages/playwright-ct-core/types/component.d.ts
+index a1b2c3d..e4f5g6h 100644
+--- a/packages/playwright-ct-core/types/component.d.ts
++++ b/packages/playwright-ct-core/types/component.d.ts
+@@ -15,7 +15,7 @@
+ 
+ export type JsxComponent = {
+   __pw_type: 'jsx',
++  __nx_type: 'jsx',
+   type: string | Function;
+   props: any;
+   key: string | number | null;
+@@ -30,7 +30,7 @@ export type JsxComponent = {
+ 
+ export type ObjectComponent = {
+   __pw_type: 'object-component',
++  __nx_type: 'object-component',
+   object: any,
+ };
+ 
+@@ -41,13 +41,13 @@ export type Component = string | JsxComponent | ObjectComponent;
+ export type MountOptions<HooksConfig> = {
+   hooksConfig?: HooksConfig;
+     __pw_hooks_before_mount?: (<HooksConfig>(
++    __nx_hooks_before_mount?: (<HooksConfig>(
+       params: { hooksConfig?: HooksConfig; [key: string]: any }
+     ) => Promise<any>);
+     __pw_hooks_after_mount?: (<HooksConfig>(
++    __nx_hooks_after_mount?: (<HooksConfig>(
+       params: { hooksConfig?: HooksConfig; [key: string]: any }
+     ) => Promise<any>);
+     // Can't start with __pw due to core reuse bindings logic for __pw*.
+-    __pwUnwrapObject: (value: any) => Promise<any>;
+-    __pwTransformObject: (value: any, mapping: (v: any) => { result: any } | undefined) => any;
++    __nxUnwrapObject: (value: any) => Promise<any>;
++    __nxTransformObject: (value: any, mapping: (v: any) => { result: any } | undefined) => any;
+ }

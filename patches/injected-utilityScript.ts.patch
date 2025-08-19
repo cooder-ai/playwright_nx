@@ -1,0 +1,15 @@
+diff --git a/packages/injected/src/utilityScript.ts b/packages/injected/src/utilityScript.ts
+index 4bacbcdff..338a83f51 100644
+--- a/packages/injected/src/utilityScript.ts
++++ b/packages/injected/src/utilityScript.ts
+@@ -44,8 +44,8 @@ export class UtilityScript {
+   constructor(global: typeof globalThis, isUnderTest: boolean) {
+     this.global = global;
+     this.isUnderTest = isUnderTest;
+-    if ((global as any).__pwClock) {
+-      this.builtins = (global as any).__pwClock.builtins;
++    if ((global as any).__nxClock) {
++      this.builtins = (global as any).__nxClock.builtins;
+     } else {
+       this.builtins = {
+         setTimeout: global.setTimeout?.bind(global),

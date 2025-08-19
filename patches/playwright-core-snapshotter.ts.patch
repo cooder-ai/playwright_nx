@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-core/src/server/trace/recorder/snapshotter.ts b/packages/playwright-core/src/server/trace/recorder/snapshotter.ts
+index 5d0139df0..7f0fb9b83 100644
+--- a/packages/playwright-core/src/server/trace/recorder/snapshotter.ts
++++ b/packages/playwright-core/src/server/trace/recorder/snapshotter.ts
+@@ -51,7 +51,7 @@ export class Snapshotter {
+     this._context = context;
+     this._delegate = delegate;
+     const guid = createGuid();
+-    this._snapshotStreamer = '__playwright_snapshot_streamer_' + guid;
++    this._snapshotStreamer = '__nx_snapshot_streamer_' + guid;
+   }
+ 
+   started(): boolean {

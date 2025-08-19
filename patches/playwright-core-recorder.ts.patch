@@ -1,0 +1,65 @@
+diff --git a/packages/playwright-core/src/server/recorder.ts b/packages/playwright-core/src/server/recorder.ts
+index ebd738c64..865a08fe9 100644
+--- a/packages/playwright-core/src/server/recorder.ts
++++ b/packages/playwright-core/src/server/recorder.ts
+@@ -160,7 +160,7 @@ export class Recorder extends EventEmitter<RecorderEventMap> implements Instrume
+ 
+     const controller = new ProgressController();
+     await controller.run(async progress => {
+-      await this._context.exposeBinding(progress, '__pw_recorderState', false, async source => {
++      await this._context.exposeBinding(progress, '__nx_recorderState', false, async source => {
+         let actionSelector: string | undefined;
+         let actionPoint: Point | undefined;
+         const hasActiveScreenshotCommand = [...this._currentCallsMetadata.keys()].some(isScreenshotCommand);
+@@ -185,24 +185,24 @@ export class Recorder extends EventEmitter<RecorderEventMap> implements Instrume
+         return uiState;
+       });
+ 
+-      await this._context.exposeBinding(progress, '__pw_recorderElementPicked', false, async ({ frame }, elementInfo: ElementInfo) => {
++      await this._context.exposeBinding(progress, '__nx_recorderElementPicked', false, async ({ frame }, elementInfo: ElementInfo) => {
+         const selectorChain = await generateFrameSelector(frame);
+         this.emit(RecorderEvent.ElementPicked, { selector: buildFullSelector(selectorChain, elementInfo.selector), ariaSnapshot: elementInfo.ariaSnapshot }, true);
+       });
+ 
+-      await this._context.exposeBinding(progress, '__pw_recorderSetMode', false, async ({ frame }, mode: Mode) => {
++      await this._context.exposeBinding(progress, '__nx_recorderSetMode', false, async ({ frame }, mode: Mode) => {
+         if (frame.parentFrame())
+           return;
+         this.setMode(mode);
+       });
+ 
+-      await this._context.exposeBinding(progress, '__pw_recorderSetOverlayState', false, async ({ frame }, state: OverlayState) => {
++      await this._context.exposeBinding(progress, '__nx_recorderSetOverlayState', false, async ({ frame }, state: OverlayState) => {
+         if (frame.parentFrame())
+           return;
+         this._overlayState = state;
+       });
+ 
+-      await this._context.exposeBinding(progress, '__pw_resume', false, () => {
++      await this._context.exposeBinding(progress, '__nx_resume', false, () => {
+         this._debugger.resume(false);
+       });
+ 
+@@ -217,11 +217,11 @@ export class Recorder extends EventEmitter<RecorderEventMap> implements Instrume
+ 
+       // Input actions that potentially lead to navigation are intercepted on the page and are
+       // performed by the Playwright.
+-      await this._context.exposeBinding(progress, '__pw_recorderPerformAction', false,
++      await this._context.exposeBinding(progress, '__nx_recorderPerformAction', false,
+           (source: BindingSource, action: actions.PerformOnRecordAction) => this._performAction(source.frame, action));
+ 
+       // Other non-essential actions are simply being recorded.
+-      await this._context.exposeBinding(progress, '__pw_recorderRecordAction', false,
++      await this._context.exposeBinding(progress, '__nx_recorderRecordAction', false,
+           (source: BindingSource, action: actions.Action) => this._recordAction(source.frame, action));
+ 
+       await this._context.extendInjectedScript(rawRecorderSource.source, { recorderMode: this._recorderMode });
+@@ -352,7 +352,7 @@ export class Recorder extends EventEmitter<RecorderEventMap> implements Instrume
+   private _refreshOverlay() {
+     for (const page of this._context.pages()) {
+       for (const frame of page.frames())
+-        frame.evaluateExpression('window.__pw_refreshOverlay()').catch(() => {});
++        frame.evaluateExpression('window.__nx_refreshOverlay()').catch(() => {});
+     }
+   }
+ 

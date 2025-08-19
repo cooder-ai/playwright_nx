@@ -1,0 +1,69 @@
+diff --git a/packages/playwright-ct-core/src/mount.ts b/packages/playwright-ct-core/src/mount.ts
+index 2dc1d8828..f3f3d676c 100644
+--- a/packages/playwright-ct-core/src/mount.ts
++++ b/packages/playwright-ct-core/src/mount.ts
+@@ -70,7 +70,7 @@ export const fixtures: Fixtures<TestFixtures, WorkerFixtures, BaseTestFixtures>
+         unmount: async () => {
+           await locator.evaluate(async () => {
+             const rootElement = document.getElementById('root')!;
+-            await window.playwrightUnmount(rootElement);
++            await window.nxUnmount(rootElement);
+           });
+         },
+         update: async (options: JsxComponent | ObjectComponentOptions) => {
+@@ -91,16 +91,16 @@ export const fixtures: Fixtures<TestFixtures, WorkerFixtures, BaseTestFixtures>
+ };
+ 
+ function isJsxComponent(component: any): component is JsxComponent {
+-  return typeof component === 'object' && component && component.__pw_type === 'jsx';
++  return typeof component === 'object' && component && component.__nx_type === 'jsx';
+ }
+ 
+ async function innerUpdate(page: Page, componentRef: JsxComponent | ImportRef, options: ObjectComponentOptions = {}): Promise<void> {
+   const component = wrapObject(createComponent(componentRef, options), boundCallbacksForMount);
+ 
+   await page.evaluate(async ({ component }) => {
+-    component = await window.__pwUnwrapObject(component);
++    component = await window.__nxUnwrapObject(component);
+     const rootElement = document.getElementById('root')!;
+-    return await window.playwrightUpdate(rootElement, component);
++    return await window.nxUpdate(rootElement, component);
+   }, { component });
+ }
+ 
+@@ -108,18 +108,18 @@ async function innerMount(page: Page, componentRef: JsxComponent | ImportRef, op
+   const component = wrapObject(createComponent(componentRef, options), boundCallbacksForMount);
+ 
+   // WebKit does not wait for deferred scripts.
+-  await page.waitForFunction(() => !!window.playwrightMount);
++  await page.waitForFunction(() => !!window.nxMount);
+ 
+   const selector = await page.evaluate(async ({ component, hooksConfig }) => {
+-    component = await window.__pwUnwrapObject(component);
+-    hooksConfig = await window.__pwUnwrapObject(hooksConfig);
++    component = await window.__nxUnwrapObject(component);
++    hooksConfig = await window.__nxUnwrapObject(hooksConfig);
+     let rootElement = document.getElementById('root');
+     if (!rootElement) {
+       rootElement = document.createElement('div');
+       rootElement.id = 'root';
+       document.body.appendChild(rootElement);
+     }
+-    await window.playwrightMount(component, rootElement, hooksConfig);
++    await window.nxMount(component, rootElement, hooksConfig);
+ 
+     return '#root >> internal:control=component';
+   }, { component, hooksConfig: options.hooksConfig });
+@@ -127,10 +127,10 @@ async function innerMount(page: Page, componentRef: JsxComponent | ImportRef, op
+ }
+ 
+ function createComponent(component: JsxComponent | ImportRef, options: ObjectComponentOptions = {}): Component {
+-  if (component.__pw_type === 'jsx')
++  if (component.__nx_type === 'jsx')
+     return component;
+   return {
+-    __pw_type: 'object-component',
++    __nx_type: 'object-component',
+     type: component,
+     ...options,
+   };

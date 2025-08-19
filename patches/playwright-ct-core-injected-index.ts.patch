@@ -1,0 +1,14 @@
+diff --git a/packages/playwright-ct-core/src/injected/index.ts b/packages/playwright-ct-core/src/injected/index.ts
+index a1b2c3d..e4f5g6h 100644
+--- a/packages/playwright-ct-core/src/injected/index.ts
++++ b/packages/playwright-ct-core/src/injected/index.ts
+@@ -17,9 +17,9 @@ import { ImportRegistry } from './importRegistry';
+ import { transformObject, unwrapObject } from './serializers';
+ 
+ (globalThis as any).playwrightMount = mount;
+-window.__pwRegistry = new ImportRegistry();
+-window.__pwUnwrapObject = unwrapObject;
+-window.__pwTransformObject = transformObject;
++window.__nxRegistry = new ImportRegistry();
++window.__nxUnwrapObject = unwrapObject;
++window.__nxTransformObject = transformObject;

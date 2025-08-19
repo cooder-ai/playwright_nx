@@ -1,0 +1,24 @@
+diff --git a/packages/playwright/src/index.ts b/packages/playwright/src/index.ts
+index 9277f0363..d2c6739cf 100644
+--- a/packages/playwright/src/index.ts
++++ b/packages/playwright/src/index.ts
+@@ -40,16 +40,16 @@ export const _baseTest: TestType<{}, {}> = rootTestType.test;
+ 
+ setBoxedStackPrefixes([path.dirname(require.resolve('../package.json'))]);
+ 
+-if ((process as any)['__pw_initiator__']) {
++if ((process as any)['__nx_initiator__']) {
+   const originalStackTraceLimit = Error.stackTraceLimit;
+   Error.stackTraceLimit = 200;
+   try {
+-    throw new Error('Requiring @playwright/test second time, \nFirst:\n' + (process as any)['__pw_initiator__'] + '\n\nSecond: ');
++    throw new Error('Requiring @playwright/test second time, \nFirst:\n' + (process as any)['__nx_initiator__'] + '\n\nSecond: ');
+   } finally {
+     Error.stackTraceLimit = originalStackTraceLimit;
+   }
+ } else {
+-  (process as any)['__pw_initiator__'] = new Error().stack;
++  (process as any)['__nx_initiator__'] = new Error().stack;
+ }
+ 
+ type TestFixtures = PlaywrightTestArgs & PlaywrightTestOptions & {

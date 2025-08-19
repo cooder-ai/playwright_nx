@@ -1,0 +1,31 @@
+diff --git a/packages/playwright/jsx-runtime.js b/packages/playwright/jsx-runtime.js
+index ff3d79e34..3a351ac05 100644
+--- a/packages/playwright/jsx-runtime.js
++++ b/packages/playwright/jsx-runtime.js
+@@ -16,7 +16,7 @@
+ 
+ function jsx(type, props, key) {
+   return {
+-    __pw_type: 'jsx',
++    __nx_type: 'jsx',
+     type,
+     props,
+     key,
+@@ -25,7 +25,7 @@ function jsx(type, props, key) {
+ 
+ function jsxs(type, props, key) {
+   return {
+-    __pw_type: 'jsx',
++    __nx_type: 'jsx',
+     type,
+     props,
+     key,
+@@ -33,7 +33,7 @@ function jsxs(type, props, key) {
+ }
+ 
+ // this is used in <></> notation
+-const Fragment = { __pw_jsx_fragment: true };
++const Fragment = { __nx_jsx_fragment: true };
+ 
+ module.exports = {
+   Fragment,

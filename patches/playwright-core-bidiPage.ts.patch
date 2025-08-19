@@ -1,0 +1,13 @@
+diff --git a/packages/playwright-core/src/server/bidi/bidiPage.ts b/packages/playwright-core/src/server/bidi/bidiPage.ts
+index d9807955a..ebabb594a 100644
+--- a/packages/playwright-core/src/server/bidi/bidiPage.ts
++++ b/packages/playwright-core/src/server/bidi/bidiPage.ts
+@@ -34,7 +34,7 @@ import type { BidiBrowserContext } from './bidiBrowser';
+ import type { BidiSession } from './bidiConnection';
+ import type * as channels from '@protocol/channels';
+ 
+-const UTILITY_WORLD_NAME = '__playwright_utility_world__';
++const UTILITY_WORLD_NAME = '__nx_utility_world__';
+ export const kPlaywrightBindingChannel = 'playwrightChannel';
+ 
+ export class BidiPage implements PageDelegate {

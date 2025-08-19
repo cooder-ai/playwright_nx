@@ -1,0 +1,62 @@
+diff --git a/packages/playwright-core/src/server/recorder/recorderApp.ts b/packages/playwright-core/src/server/recorder/recorderApp.ts
+index 5d1ffb81b..c9df2df06 100644
+--- a/packages/playwright-core/src/server/recorder/recorderApp.ts
++++ b/packages/playwright-core/src/server/recorder/recorderApp.ts
+@@ -284,7 +284,7 @@ export class RecorderApp {
+ 
+   private _onPageNavigated(url: string) {
+     this._page.mainFrame().evaluateExpression((({ url }: { url: string }) => {
+-      window.playwrightSetPageURL(url);
++      window.nxSetPageURL(url);
+     }).toString(), { isFunction: true }, { url }).catch(() => {});
+   }
+ 
+@@ -295,13 +295,13 @@ export class RecorderApp {
+ 
+   private _onModeChanged(mode: Mode) {
+     this._page.mainFrame().evaluateExpression(((mode: Mode) => {
+-      window.playwrightSetMode(mode);
++      window.nxSetMode(mode);
+     }).toString(), { isFunction: true }, mode).catch(() => {});
+   }
+ 
+   private _onPausedStateChanged(paused: boolean) {
+     this._page.mainFrame().evaluateExpression(((paused: boolean) => {
+-      window.playwrightSetPaused(paused);
++      window.nxSetPaused(paused);
+     }).toString(), { isFunction: true }, paused).catch(() => {});
+   }
+ 
+@@ -317,20 +317,20 @@ export class RecorderApp {
+     if (userGesture)
+       this._page.bringToFront();
+     this._page.mainFrame().evaluateExpression(((param: { elementInfo: ElementInfo, userGesture?: boolean }) => {
+-      window.playwrightElementPicked(param.elementInfo, param.userGesture);
++      window.nxElementPicked(param.elementInfo, param.userGesture);
+     }).toString(), { isFunction: true }, { elementInfo, userGesture }).catch(() => {});
+   }
+ 
+   private _onCallLogsUpdated(callLogs: CallLog[]) {
+     this._page.mainFrame().evaluateExpression(((callLogs: CallLog[]) => {
+-      window.playwrightUpdateLogs(callLogs);
++      window.nxUpdateLogs(callLogs);
+     }).toString(), { isFunction: true }, callLogs).catch(() => {});
+   }
+ 
+   private _pushAllSources() {
+     const sources = [...this._userSources, ...this._recorderSources];
+     this._page.mainFrame().evaluateExpression((({ sources }: { sources: Source[] }) => {
+-      window.playwrightSetSources(sources);
++      window.nxSetSources(sources);
+     }).toString(), { isFunction: true }, { sources }).catch(() => {});
+   }
+ 
+@@ -338,7 +338,7 @@ export class RecorderApp {
+     if (!sourceId)
+       return;
+     this._page.mainFrame().evaluateExpression((({ sourceId }: { sourceId: string }) => {
+-      window.playwrightSelectSource(sourceId);
++      window.nxSelectSource(sourceId);
+     }).toString(), { isFunction: true }, { sourceId }).catch(() => {});
+   }
+ 

@@ -1,0 +1,91 @@
+diff --git a/packages/playwright-core/src/server/clock.ts b/packages/playwright-core/src/server/clock.ts
+index 59964b280..e0a00a39e 100644
+--- a/packages/playwright-core/src/server/clock.ts
++++ b/packages/playwright-core/src/server/clock.ts
+@@ -36,59 +36,59 @@ export class Clock {
+   async fastForward(progress: Progress, ticks: number | string) {
+     await this._installIfNeeded(progress);
+     const ticksMillis = parseTicks(ticks);
+-    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__pwClock.controller.log('fastForward', ${Date.now()}, ${ticksMillis})`));
+-    await progress.race(this._evaluateInFrames(`globalThis.__pwClock.controller.fastForward(${ticksMillis})`));
++    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__nxClock.controller.log('fastForward', ${Date.now()}, ${ticksMillis})`));
++    await progress.race(this._evaluateInFrames(`globalThis.__nxClock.controller.fastForward(${ticksMillis})`));
+   }
+ 
+   async install(progress: Progress, time: number | string | undefined) {
+     await this._installIfNeeded(progress);
+     const timeMillis = time !== undefined ? parseTime(time) : Date.now();
+-    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__pwClock.controller.log('install', ${Date.now()}, ${timeMillis})`));
+-    await progress.race(this._evaluateInFrames(`globalThis.__pwClock.controller.install(${timeMillis})`));
++    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__nxClock.controller.log('install', ${Date.now()}, ${timeMillis})`));
++    await progress.race(this._evaluateInFrames(`globalThis.__nxClock.controller.install(${timeMillis})`));
+   }
+ 
+   async pauseAt(progress: Progress, ticks: number | string) {
+     await this._installIfNeeded(progress);
+     const timeMillis = parseTime(ticks);
+-    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__pwClock.controller.log('pauseAt', ${Date.now()}, ${timeMillis})`));
+-    await progress.race(this._evaluateInFrames(`globalThis.__pwClock.controller.pauseAt(${timeMillis})`));
++    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__nxClock.controller.log('pauseAt', ${Date.now()}, ${timeMillis})`));
++    await progress.race(this._evaluateInFrames(`globalThis.__nxClock.controller.pauseAt(${timeMillis})`));
+   }
+ 
+   resumeNoReply() {
+     if (!this._initScripts.length)
+       return;
+     const doResume = async () => {
+-      this._initScripts.push(await this._browserContext.addInitScript(undefined, `globalThis.__pwClock.controller.log('resume', ${Date.now()})`));
+-      await this._evaluateInFrames(`globalThis.__pwClock.controller.resume()`);
++      this._initScripts.push(await this._browserContext.addInitScript(undefined, `globalThis.__nxClock.controller.log('resume', ${Date.now()})`));
++      await this._evaluateInFrames(`globalThis.__nxClock.controller.resume()`);
+     };
+     doResume().catch(() => {});
+   }
+ 
+   async resume(progress: Progress) {
+     await this._installIfNeeded(progress);
+-    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__pwClock.controller.log('resume', ${Date.now()})`));
+-    await progress.race(this._evaluateInFrames(`globalThis.__pwClock.controller.resume()`));
++    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__nxClock.controller.log('resume', ${Date.now()})`));
++    await progress.race(this._evaluateInFrames(`globalThis.__nxClock.controller.resume()`));
+   }
+ 
+   async setFixedTime(progress: Progress, time: string | number) {
+     await this._installIfNeeded(progress);
+     const timeMillis = parseTime(time);
+-    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__pwClock.controller.log('setFixedTime', ${Date.now()}, ${timeMillis})`));
+-    await progress.race(this._evaluateInFrames(`globalThis.__pwClock.controller.setFixedTime(${timeMillis})`));
++    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__nxClock.controller.log('setFixedTime', ${Date.now()}, ${timeMillis})`));
++    await progress.race(this._evaluateInFrames(`globalThis.__nxClock.controller.setFixedTime(${timeMillis})`));
+   }
+ 
+   async setSystemTime(progress: Progress, time: string | number) {
+     await this._installIfNeeded(progress);
+     const timeMillis = parseTime(time);
+-    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__pwClock.controller.log('setSystemTime', ${Date.now()}, ${timeMillis})`));
+-    await progress.race(this._evaluateInFrames(`globalThis.__pwClock.controller.setSystemTime(${timeMillis})`));
++    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__nxClock.controller.log('setSystemTime', ${Date.now()}, ${timeMillis})`));
++    await progress.race(this._evaluateInFrames(`globalThis.__nxClock.controller.setSystemTime(${timeMillis})`));
+   }
+ 
+   async runFor(progress: Progress, ticks: number | string) {
+     await this._installIfNeeded(progress);
+     const ticksMillis = parseTicks(ticks);
+-    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__pwClock.controller.log('runFor', ${Date.now()}, ${ticksMillis})`));
+-    await progress.race(this._evaluateInFrames(`globalThis.__pwClock.controller.runFor(${ticksMillis})`));
++    this._initScripts.push(await this._browserContext.addInitScript(progress, `globalThis.__nxClock.controller.log('runFor', ${Date.now()}, ${ticksMillis})`));
++    await progress.race(this._evaluateInFrames(`globalThis.__nxClock.controller.runFor(${ticksMillis})`));
+   }
+ 
+   private async _installIfNeeded(progress: Progress) {
+@@ -97,8 +97,8 @@ export class Clock {
+     const script = `(() => {
+       const module = {};
+       ${rawClockSource.source}
+-      if (!globalThis.__pwClock)
+-        globalThis.__pwClock = (module.exports.inject())(globalThis);
++      if (!globalThis.__nxClock)
++        globalThis.__nxClock = (module.exports.inject())(globalThis);
+     })();`;
+     const initScript = await this._browserContext.addInitScript(progress, script);
+     await progress.race(this._evaluateInFrames(script));
