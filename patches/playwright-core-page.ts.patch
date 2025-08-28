@@ -1,5 +1,5 @@
 diff --git a/packages/playwright-core/src/server/page.ts b/packages/playwright-core/src/server/page.ts
-index 7f8f7b716..32ff975e1 100644
+index 7f8f7b716..d26b1b4b1 100644
 --- a/packages/playwright-core/src/server/page.ts
 +++ b/packages/playwright-core/src/server/page.ts
 @@ -795,7 +795,8 @@ export class Page extends SdkObject {
@@ -12,7 +12,7 @@ index 7f8f7b716..32ff975e1 100644
    }
  
    getBinding(name: string) {
-@@ -879,19 +880,27 @@ export class Worker extends SdkObject {
+@@ -879,19 +880,26 @@ export class Worker extends SdkObject {
  }
  
  export class PageBinding {
@@ -32,7 +32,6 @@ index 7f8f7b716..32ff975e1 100644
 +          console.log('Controller already exists');
 +          return;
 +        }
-+        const bindingName = '${PageBinding.kBindingName}';
 +        const module = { exports: {} };
          ${rawBindingsControllerSource.source}
 -        const property = '${PageBinding.kController}';
@@ -41,7 +40,7 @@ index 7f8f7b716..32ff975e1 100644
 -      })();
 -    `);
 +        const BindingsController = module.exports.BindingsController;
-+        globalThis['${PageBinding.kController}'] = new BindingsController(globalThis, bindingName);
++        globalThis['${PageBinding.kController}'] = new BindingsController(globalThis, '${PageBinding.kBindingName}');
 +        console.log('Controller created successfully');
 +      } catch (e) {
 +        console.error('binding controller init error:', e);
@@ -50,7 +49,7 @@ index 7f8f7b716..32ff975e1 100644
    }
  
    readonly name: string;
-@@ -904,9 +913,17 @@ export class PageBinding {
+@@ -904,9 +912,17 @@ export class PageBinding {
    constructor(name: string, playwrightFunction: frames.FunctionWithSource, needsHandle: boolean) {
      this.name = name;
      this.playwrightFunction = playwrightFunction;

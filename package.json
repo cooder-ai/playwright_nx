@@ -44,7 +44,13 @@
     "roll": "node utils/roll_browser.js",
     "check-deps": "node utils/check_deps.js",
     "build-android-driver": "./utils/build_android_driver.sh",
-    "innerloop": "playwright run-server --reuse-browser"
+    "innerloop": "playwright run-server --reuse-browser",
+    "patches:apply": "node scripts/patches.js apply",
+    "patches:rollback": "node scripts/patches.js rollback",
+    "patches:status": "node scripts/patches.js status",
+    "patches:update": "node scripts/patches.js update",
+    "patches:list": "node scripts/patches.js list",
+    "patches:clean": "node scripts/patches.js clean-apply"
   },
   "workspaces": [
     "packages/*"

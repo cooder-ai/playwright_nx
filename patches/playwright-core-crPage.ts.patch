@@ -1,5 +1,5 @@
 diff --git a/packages/playwright-core/src/server/chromium/crPage.ts b/packages/playwright-core/src/server/chromium/crPage.ts
-index 34e9e892d..706267991 100644
+index c019cac28..fb8afc283 100644
 --- a/packages/playwright-core/src/server/chromium/crPage.ts
 +++ b/packages/playwright-core/src/server/chromium/crPage.ts
 @@ -96,7 +96,7 @@ export class CRPage implements PageDelegate {
@@ -11,13 +11,3 @@ index 34e9e892d..706267991 100644
      this._networkManager = new CRNetworkManager(this._page, null);
      // Sync any browser context state to the network manager. This does not talk over CDP because
      // we have not connected any sessions to the network manager yet.
-@@ -1073,7 +1073,9 @@ class FrameSession {
- 
-   async _evaluateOnNewDocument(initScript: InitScript, world: types.World, runImmediately?: boolean): Promise<void> {
-     const worldName = world === 'utility' ? this._crPage.utilityWorldName : undefined;
-+    console.log('DEBUG-TEMP: _evaluateOnNewDocument called, source length:', initScript.source.length, 'runImmediately:', runImmediately);
-     const { identifier } = await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source: initScript.source, worldName, runImmediately });
-+    console.log('DEBUG-TEMP: addScriptToEvaluateOnNewDocument completed, identifier:', identifier);
-     this._initScriptIds.set(initScript, identifier);
-   }
- 

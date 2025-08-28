@@ -1,18 +1,20 @@
 diff --git a/tests/library/browsercontext-expose-function.spec.ts b/tests/library/browsercontext-expose-function.spec.ts
-index c242c8582..2c898f53e 100644
+index c242c8582..f0bb950f0 100644
 --- a/tests/library/browsercontext-expose-function.spec.ts
 +++ b/tests/library/browsercontext-expose-function.spec.ts
-@@ -25,6 +25,9 @@ it('expose binding should work', async ({ context }) => {
-     return a + b;
-   });
-   const page = await context.newPage();
-+  
-+  
-+  
-   const result = await page.evaluate('add(5, 6)');
-   expect(bindingSource.context).toBe(context);
-   expect(bindingSource.page).toBe(page);
-@@ -91,7 +94,9 @@ it('should work with CSP', async ({ page, context, server }) => {
+@@ -68,9 +68,9 @@ it('should be callable from-inside addInitScript', async ({ context, server }) =
+   await page.evaluate('undefined');
+   await expect.poll(() => args).toEqual(['context']);
+   args = [];
+-  await page.addInitScript('window["woof"]("page")');
++  await page.addInitScript('window["woof"]("page")');  
+   await page.reload();
+-  await expect.poll(() => args).toEqual(['context', 'page']);
++  expect(args).toEqual(['context', 'page']);
+ });
+ 
+ it('exposeBindingHandle should work', async ({ context }) => {
+@@ -91,7 +91,223 @@ it('should work with CSP', async ({ page, context, server }) => {
    server.setCSP('/empty.html', 'default-src "self"');
    await page.goto(server.EMPTY_PAGE);
    let called = false;
@@ -22,3 +24,217 @@ index c242c8582..2c898f53e 100644
    await page.evaluate(() => (window as any).hi());
    expect(called).toBe(true);
  });
++
++it('debug CDP mechanism', async ({ context }) => {
++  console.log('=== CDP机制调试开始 ===');
++  
++  const page = await context.newPage();
++  const cdpSession = await context.newCDPSession(page);
++  
++  console.log('1. 检查浏览器启动参数和状态...');
++  
++  // 检查用户代理，了解浏览器状态
++  const userAgent = await page.evaluate(() => navigator.userAgent);
++  console.log('用户代理:', userAgent);
++  
++  // 检查是否有自动化标识
++  const isAutomated = await page.evaluate(() => {
++    return {
++      webdriver: navigator.webdriver,
++      automationControlled: window.chrome && window.chrome.runtime && window.chrome.runtime.onConnect ? 'chrome.runtime存在' : 'chrome.runtime不存在',
++      playwrightPresent: typeof window.__playwright !== 'undefined'
++    };
++  });
++  console.log('自动化状态:', isAutomated);
++  
++  console.log('2. 测试其他CDP命令是否正常工作...');
++  
++  try {
++    // 测试获取文档信息
++    const docInfo = await cdpSession.send('DOM.getDocument');
++    console.log('DOM.getDocument成功，nodeId:', docInfo.root.nodeId);
++    
++    // 测试运行时评估
++    const evalResult = await cdpSession.send('Runtime.evaluate', {
++      expression: 'window.runtimeTest = "RUNTIME_WORKS"; window.runtimeTest;'
++    });
++    console.log('Runtime.evaluate成功，result:', evalResult.result.value);
++  } catch (error) {
++    console.error('其他CDP命令失败:', error);
++  }
++  
++  console.log('3. 测试基本的CDP addScriptToEvaluateOnNewDocument...');
++  
++  try {
++    const result1 = await cdpSession.send('Page.addScriptToEvaluateOnNewDocument', {
++      source: `
++        console.log('CDP测试脚本执行！');
++        window.cdpTest = 'CDP_WORKING';
++      `
++    });
++    console.log('CDP调用成功，identifier:', result1.identifier);
++    
++    // 尝试带runImmediately参数的版本
++    const result2 = await cdpSession.send('Page.addScriptToEvaluateOnNewDocument', {
++      source: `
++        console.log('CDP立即执行脚本！');
++        window.cdpTestImmediate = 'CDP_IMMEDIATE';
++      `,
++      runImmediately: true
++    });
++    console.log('CDP立即执行调用成功，identifier:', result2.identifier);
++    
++    // 测试不同类型的脚本注入
++    const result3 = await cdpSession.send('Page.addScriptToEvaluateOnNewDocument', {
++      source: `window.cdpTest3 = 'SIMPLE_TEST';`
++    });
++    console.log('简单脚本调用成功，identifier:', result3.identifier);
++    
++    // 测试是否支持世界隔离
++    const result4 = await cdpSession.send('Page.addScriptToEvaluateOnNewDocument', {
++      source: `window.cdpTest4 = 'WORLD_TEST';`,
++      worldName: 'main'
++    });
++    console.log('世界隔离脚本调用成功，identifier:', result4.identifier);
++  } catch (error) {
++    console.error('CDP调用失败:', error);
++  }
++  
++  // 在导航前先等待，确保脚本被正确注册
++  await new Promise(resolve => setTimeout(resolve, 100));
++  
++  await page.goto('data:text/html,<html><body>Test</body></html>');
++  
++  const cdpTestResult = await page.evaluate(() => window.cdpTest);
++  const cdpTestImmediateResult = await page.evaluate(() => window.cdpTestImmediate);
++  const cdpTest3Result = await page.evaluate(() => window.cdpTest3);
++  const cdpTest4Result = await page.evaluate(() => window.cdpTest4);
++  const runtimeTestResult = await page.evaluate(() => window.runtimeTest);
++  console.log('CDP测试结果:', cdpTestResult);
++  console.log('CDP立即执行结果:', cdpTestImmediateResult);
++  console.log('CDP简单脚本结果:', cdpTest3Result);
++  console.log('CDP世界隔离结果:', cdpTest4Result);
++  console.log('Runtime.evaluate结果:', runtimeTestResult);
++  
++  // 重新加载页面，看看脚本是否执行
++  console.log('重新加载页面以检查脚本执行...');
++  await page.reload();
++  
++  const cdpTestResult2 = await page.evaluate(() => window.cdpTest);
++  console.log('重新加载后的CDP测试结果:', cdpTestResult2);
++  
++  console.log('2. 检查现有绑定系统的脚本注入...');
++  
++  // 先检查是否能看到控制器初始化的日志
++  const consoleLogs = [];
++  page.on('console', msg => {
++    console.log(`页面控制台[${msg.type()}]:`, msg.text());
++    consoleLogs.push(msg.text());
++  });
++  
++  // 模拟exposeBinding的过程
++  await context.exposeBinding('debugAdd', (source, a, b) => {
++    console.log('debugAdd 被调用:', a, b);
++    return a + b;
++  });
++  
++  const page2 = await context.newPage();
++  // 先检查日志，再导航
++  await page2.goto('data:text/html,<html><body>Test Page 2</body></html>');
++  
++  // 等待一下让日志输出
++  await new Promise(resolve => setTimeout(resolve, 200));
++  
++  // 检查绑定是否存在
++  const bindingExists = await page2.evaluate(() => {
++    return typeof globalThis.debugAdd === 'function';
++  });
++  console.log('绑定函数存在:', bindingExists);
++  
++  // 检查控制器是否存在
++  const controllerExists = await page2.evaluate(() => {
++    return typeof globalThis['__nx_controller__'] === 'object';
++  });
++  console.log('控制器存在:', controllerExists);
++  
++  // 检查控制器的详细信息
++  if (controllerExists) {
++    const controllerInfo = await page2.evaluate(() => {
++      const controller = globalThis['__nx_controller__'];
++      return {
++        hasAddBinding: typeof controller.addBinding === 'function',
++        constructor: controller.constructor.name
++      };
++    });
++    console.log('控制器详细信息:', controllerInfo);
++  }
++  
++  if (bindingExists) {
++    try {
++      const result = await page2.evaluate('debugAdd(10, 20)');
++      console.log('绑定调用结果:', result);
++    } catch (e) {
++      console.log('绑定调用失败:', e.message);
++    }
++  }
++  
++  console.log('=== CDP机制调试结束 ===');
++});
++
++it('基础绑定机制测试', async ({ context }) => {
++  console.log('=== 基础绑定机制测试开始 ===');
++  
++  // 先创建一个页面（模拟CDP测试的模式）
++  const tempPage = await context.newPage();
++  console.log('临时页面创建完成');
++  
++  // 创建一个简单的绑定
++  await context.exposeBinding('simpleAdd', (source, a, b) => {
++    console.log('simpleAdd 被调用:', a, b);
++    return a + b;
++  });
++  console.log('绑定创建完成');
++  
++  // 创建新页面来测试绑定
++  const page = await context.newPage();
++  console.log('测试页面创建完成');
++  
++  // 检查绑定是否存在
++  const bindingExists = await page.evaluate(() => {
++    return typeof globalThis.simpleAdd === 'function';
++  });
++  console.log('绑定函数是否存在:', bindingExists);
++  
++  // 检查控制器是否存在
++  const controllerExists = await page.evaluate(() => {
++    return typeof globalThis['__nx_controller__'] === 'object' && globalThis['__nx_controller__'] !== null;
++  });
++  console.log('控制器是否存在:', controllerExists);
++  
++  // 如果控制器存在，查看详细信息
++  if (controllerExists) {
++    const controllerInfo = await page.evaluate(() => {
++      const ctrl = globalThis['__nx_controller__'];
++      return {
++        hasAddBinding: typeof ctrl.addBinding === 'function',
++        hasRemoveBinding: typeof ctrl.removeBinding === 'function',
++        constructor: ctrl.constructor.name
++      };
++    });
++    console.log('控制器详细信息:', controllerInfo);
++  }
++  
++  // 尝试调用绑定函数
++  if (bindingExists) {
++    try {
++      const result = await page.evaluate('simpleAdd(3, 7)');
++      console.log('绑定调用成功，结果:', result);
++    } catch (error) {
++      console.log('绑定调用失败:', error.message);
++    }
++  } else {
++    console.log('绑定函数不存在，无法测试调用');
++  }
++  
++  console.log('=== 基础绑定机制测试结束 ===');
++});
