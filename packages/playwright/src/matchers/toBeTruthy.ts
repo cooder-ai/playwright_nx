@@ -16,6 +16,7 @@
 
 import { callLogText, expectTypes } from '../util';
 import { kNoElementsFoundError, matcherHint } from './matcherHint';
+import { runBrowserBackendOnError } from '../mcp/browser/backend';
 
 import type { MatcherResult } from './matcherHint';
 import type { ExpectMatcherState } from '../../types/test';
@@ -39,7 +40,13 @@ export async function toBeTruthy(
   };
 
   const timeout = options.timeout ?? this.timeout;
-  const { matches: pass, log, timedOut, received } = await query(!!this.isNot, timeout);
+
+  const { matches: pass, log, timedOut, received } = await query(!!this.isNot, timeout).catch(async error => {
+    // FIXME: query should not throw, but it does for strict mode violations for example.
+    await runBrowserBackendOnError(receiver.page(), () => error.message);
+    throw error;
+  });
+
   if (pass === !this.isNot) {
     return {
       name: matcherName,
@@ -64,6 +71,9 @@ export async function toBeTruthy(
     const logText = callLogText(log);
     return `${header}${logText}`;
   };
+
+  await runBrowserBackendOnError(receiver.page(), message);
+
   return {
     message,
     pass,
